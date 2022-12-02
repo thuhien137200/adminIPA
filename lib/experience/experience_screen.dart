@@ -5,17 +5,17 @@ import '../../config/size_config.dart';
 import '../../style/style.dart';
 
 
-class QuestionScreen extends StatefulWidget {
-  const QuestionScreen({Key? key}) : super(key: key);
+class ExperienceScreen extends StatefulWidget {
+  const ExperienceScreen({Key? key}) : super(key: key);
 
   @override
-  State<QuestionScreen> createState() => _QuestionScreenState();
+  State<ExperienceScreen> createState() => _ExperienceScreenState();
 }
 
-class _QuestionScreenState extends State<QuestionScreen> {
+class _ExperienceScreenState extends State<ExperienceScreen> {
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  Row HeaderQuestion()
+  Row HeaderExperience()
   {
     return Row(
         mainAxisSize: MainAxisSize.min,
@@ -26,29 +26,29 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   PrimaryText(
-                      text: 'Question',
+                      text: 'Experience Post',
                       size: 30,
                       fontWeight: FontWeight.w800),
                   PrimaryText(
-                    text: 'Manage All Question post',
+                    text: 'Manage All Experience Post',
                     size: 16,
                     fontWeight: FontWeight.w400,
                     color: Color(0xffa6a6a6),
-                  ),
-
+                  )
                 ]),
-          ),Spacer(
+          ),
+          Spacer(
             flex: 1,
           ),
           IconButton(onPressed: (){}, icon: Icon(Icons.add))
         ]);
   }
 
-  void removeQuestion()
+  void removeExperiencePost()
   {
     //dosomething
   }
-  Container DataTableQuestion()
+  Container DataTableExperience()
   {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -65,7 +65,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           DataColumn(
             label: Expanded(
               child: Text(
-                'Question Title',
+                'Title',
                 style: TextStyle(fontStyle: FontStyle.italic),
               ),
             ),
@@ -73,7 +73,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           DataColumn(
             label: Expanded(
               child: Text(
-                'Created At',
+                'Created at',
                 style: TextStyle(fontStyle: FontStyle.italic),
               ),
             ),
@@ -90,24 +90,24 @@ class _QuestionScreenState extends State<QuestionScreen> {
           DataRow(
             cells: <DataCell>[
               DataCell(Text('1')),
-              DataCell(Text('How to do this one?')),
-              DataCell(Text('25/11/2022')),
+              DataCell(Text('How to be handsome?')),
+              DataCell(Text('02/12/2022')),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
           ),
           DataRow(
             cells: <DataCell>[
               DataCell(Text('2')),
-              DataCell(Text('Flutter is so amazing')),
-              DataCell(Text('27/11/2022')),
+              DataCell(Text('How to improve English skills')),
+              DataCell(Text('01/12/2022')),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
           ),
           DataRow(
             cells: <DataCell>[
               DataCell(Text('3')),
-              DataCell(Text('Is C++ important?')),
-              DataCell(Text('27/11/2022')),
+              DataCell(Text('Is English important for developers?')),
+              DataCell(Text('25/11/2022')),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
           ),
@@ -132,11 +132,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        HeaderQuestion(),
+                        HeaderExperience(),
                         SizedBox(
                           height: SizeConfig.blockSizeVertical * 2.5,
                         ),
-                        DataTableQuestion()
+                        DataTableExperience()
                       ],
                     ),
                   ),

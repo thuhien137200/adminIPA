@@ -5,17 +5,17 @@ import '../../config/size_config.dart';
 import '../../style/style.dart';
 
 
-class QuestionScreen extends StatefulWidget {
-  const QuestionScreen({Key? key}) : super(key: key);
+class TopicScreen extends StatefulWidget {
+  const TopicScreen({Key? key}) : super(key: key);
 
   @override
-  State<QuestionScreen> createState() => _QuestionScreenState();
+  State<TopicScreen> createState() => _TopicScreenState();
 }
 
-class _QuestionScreenState extends State<QuestionScreen> {
+class _TopicScreenState extends State<TopicScreen> {
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  Row HeaderQuestion()
+  Row HeaderTopic()
   {
     return Row(
         mainAxisSize: MainAxisSize.min,
@@ -26,29 +26,29 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   PrimaryText(
-                      text: 'Question',
+                      text: 'Topic',
                       size: 30,
                       fontWeight: FontWeight.w800),
                   PrimaryText(
-                    text: 'Manage All Question post',
+                    text: 'Manage All Topic',
                     size: 16,
                     fontWeight: FontWeight.w400,
                     color: Color(0xffa6a6a6),
-                  ),
-
+                  )
                 ]),
-          ),Spacer(
+          ),
+          Spacer(
             flex: 1,
           ),
           IconButton(onPressed: (){}, icon: Icon(Icons.add))
         ]);
   }
 
-  void removeQuestion()
+  void removeTopict()
   {
     //dosomething
   }
-  Container DataTableQuestion()
+  Container DataTableTopic()
   {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -65,15 +65,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           DataColumn(
             label: Expanded(
               child: Text(
-                'Question Title',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Created At',
+                'Topic Name',
                 style: TextStyle(fontStyle: FontStyle.italic),
               ),
             ),
@@ -90,24 +82,21 @@ class _QuestionScreenState extends State<QuestionScreen> {
           DataRow(
             cells: <DataCell>[
               DataCell(Text('1')),
-              DataCell(Text('How to do this one?')),
-              DataCell(Text('25/11/2022')),
+              DataCell(Text('Others')),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
           ),
           DataRow(
             cells: <DataCell>[
               DataCell(Text('2')),
-              DataCell(Text('Flutter is so amazing')),
-              DataCell(Text('27/11/2022')),
+              DataCell(Text('Skills')),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
           ),
           DataRow(
             cells: <DataCell>[
               DataCell(Text('3')),
-              DataCell(Text('Is C++ important?')),
-              DataCell(Text('27/11/2022')),
+              DataCell(Text('Clothes')),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
           ),
@@ -132,11 +121,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        HeaderQuestion(),
+                        HeaderTopic(),
                         SizedBox(
                           height: SizeConfig.blockSizeVertical * 2.5,
                         ),
-                        DataTableQuestion()
+                        DataTableTopic()
                       ],
                     ),
                   ),
