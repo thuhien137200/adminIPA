@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:admin_ipa/experience/experience_screen.dart';
 import 'package:admin_ipa/screens/Quizzes/quizzes_screen.dart';
 import 'package:admin_ipa/screens/account/account_screen.dart';
 import 'package:admin_ipa/screens/article/article_screen.dart';
@@ -7,6 +8,7 @@ import 'package:admin_ipa/screens/company/company_screen.dart';
 import 'package:admin_ipa/screens/dashboard/dashboard_screen.dart';
 import 'package:admin_ipa/screens/question/question_screen.dart';
 import 'package:admin_ipa/screens/settings/setting.dart';
+import 'package:admin_ipa/screens/topic/topic_screen.dart';
 import 'package:flutter/material.dart';
 
 class DatabaseSideBar {
@@ -35,11 +37,20 @@ class DatabaseSideBar {
     SideBox company = SideBox(
         content: "Company",
         iconData: Icons.home_repair_service_outlined,
-        iconData_onClick: Icons.home_repair_service_outlined);
+        iconData_onClick: Icons.home_repair_service);
+    SideBox topic = SideBox(
+        content: "Topic",
+        iconData: Icons.topic_outlined,
+        iconData_onClick: Icons.topic);
+    SideBox experience = SideBox(
+        content: "Experience post",
+        iconData: Icons.star_border,
+        iconData_onClick: Icons.star);
     SideBox setting = SideBox(
         content: "Setting",
         iconData: Icons.settings_outlined,
         iconData_onClick: Icons.settings_outlined);
+
     List<SideBox> result = [
       dashboard,
       article,
@@ -47,18 +58,22 @@ class DatabaseSideBar {
       quiz,
       account,
       company,
+      topic,
+      experience,
       setting
     ];
     return result;
   }
 
   Widget getScreen(Size size) {
-    Widget dashboard = DashboardScreen(size: size);
-    Widget article = ArticleScreen(size: size);
-    Widget question = QuestionScreen(size: size);
+    Widget dashboard = DashboardScreen();
+    Widget article = ArticleScreen();
+    Widget question = QuestionScreen();
     Widget quiz = QuizScreen(size: size);
-    Widget account = AccountScreen(size: size);
-    Widget company = CompanyScreen(size: size);
+    Widget account = AccountScreen();
+    Widget company = CompanyScreen();
+    Widget topic = TopicScreen();
+    Widget experience = ExperienceScreen();
     Widget setting = SettingScreen(size: size);
     List<Widget> result = [
       dashboard,
@@ -67,6 +82,8 @@ class DatabaseSideBar {
       quiz,
       account,
       company,
+      topic,
+      experience,
       setting
     ];
     return result[selectionIndex];
