@@ -6,6 +6,23 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import '../../../model/data_quizzes.dart';
+
+class OverviewQuiz {
+  static int numberJob = 0;
+  static int numberCategories = 0;
+  static int numberQuizzes = 0;
+  static int numberQuestion = 0;
+  static List<Job> listJob = [];
+  void reset() {
+    numberJob = 0;
+    numberCategories = 0;
+    numberQuizzes = 0;
+    numberQuestion = 0;
+    listJob = [];
+  }
+}
+
 class Overview extends StatelessWidget {
   const Overview({Key? key, required this.width}) : super(key: key);
   final double width;
@@ -75,10 +92,11 @@ class Overview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<DataBoxOverView> dataTemplate = [
-      DataBoxOverView(content: "Jobs", number: 2),
-      DataBoxOverView(content: "Categories", number: 10),
-      DataBoxOverView(content: "Quizzes", number: 20),
-      DataBoxOverView(content: "Question", number: 50)
+      DataBoxOverView(content: "Jobs", number: OverviewQuiz.numberJob),
+      DataBoxOverView(
+          content: "Categories", number: OverviewQuiz.numberCategories),
+      DataBoxOverView(content: "Quizzes", number: OverviewQuiz.numberQuizzes),
+      DataBoxOverView(content: "Question", number: OverviewQuiz.numberQuestion)
     ];
 
     int crossAxisCount = (width / 200).toInt() > dataTemplate.length

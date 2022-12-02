@@ -103,9 +103,7 @@ class DatabaseSideBar {
   Widget CustomSideBarBox(int index, double width) {
     SideBox data = getData()[index];
     List<Widget> child = [
-      Icon(data.iconData,
-          // color: Color.fromRGBO(124, 116, 228, 1),
-          color: Color.fromRGBO(129, 105, 155, 1))
+      Icon(data.iconData, color: Color.fromRGBO(129, 105, 155, 1))
     ];
     if (width > 165)
       child.add(Text(
@@ -113,7 +111,6 @@ class DatabaseSideBar {
         textAlign: TextAlign.end,
         style: TextStyle(
             decoration: TextDecoration.none,
-            // color: Color.fromRGBO(124, 116, 228, 1),
             color: Color.fromRGBO(129, 105, 155, 1),
             fontSize: 14,
             fontFamily: "Manrope-ExtraBold",

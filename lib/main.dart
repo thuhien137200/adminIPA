@@ -1,11 +1,13 @@
 import 'package:admin_ipa/controller/color_theme_controller.dart';
 import 'package:admin_ipa/screens/Quizzes/quizzes_screen.dart';
+import 'package:admin_ipa/services/quizzes_services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+import 'model/data_quizzes.dart';
 import 'model/data_side_bar.dart';
 
 void main() async {
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.done) {
               return const MyHomePage();
             }
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }),
     );
   }
@@ -70,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
           Flexible(flex: 2, child: sideBar(size.height, size.width * 2 / 12)),
           Flexible(
               flex: 10,
-              // child: Container(),
               child: DatabaseSideBar()
                   .getScreen(Size(size.width * 10 / 12, size.height))),
         ],
