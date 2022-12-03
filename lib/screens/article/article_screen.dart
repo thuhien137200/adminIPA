@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
+import '../../model/data_article.dart';
+import '../../services/articles_service.dart';
 import '../../style/style.dart';
 
 
@@ -16,6 +19,27 @@ class ArticleScreen extends StatefulWidget {
 class _ArticleScreenState extends State<ArticleScreen> {
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
+  late Future<List<ArticlePost>?> _dataFuture;
+
+  @override
+  void initState() {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+    _dataFuture = _db.collection('articles').get().then(_articlesFromQuerySnapshot);
+    super.initState();
+  }
+
+  List<ArticlePost>? _articlesFromQuerySnapshot(
+      QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+    return querySnapshot.docs
+        .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+      if (documentSnapshot.exists) {
+        return ArticlePost.fromDocumentSnapshot(documentSnapshot);
+      }
+      return ArticlePost.test();
+    }).toList();
+  }
+
   Row HeaderArticle()
   {
     return Row(
@@ -49,71 +73,69 @@ class _ArticleScreenState extends State<ArticleScreen> {
   {
     //dosomething
   }
-  Container DataTableArticle()
+
+  DataRow RowEmpty() {
+    return DataRow(cells: [
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+    ]);
+  }
+
+  Widget DataTableArticle()
   {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: DataTable(
-        columns:  <DataColumn>[
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'ID',
-                style: TextStyle(fontStyle: FontStyle.italic),
+    return FutureBuilder(
+      future: _dataFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<ArticlePost>?> snapshot) {
+        List<ArticlePost>? articles = snapshot.data;
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          child: DataTable(
+            columns:  <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Article Title',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Article Title',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Created At',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Created At',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                '',
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
-        rows:  <DataRow>[
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('1')),
-              DataCell(Text('How to do this one?')),
-              DataCell(Text('25/11/2022')),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('2')),
-              DataCell(Text('Flutter is so amazing')),
-              DataCell(Text('27/11/2022')),
+            rows:articles==null?[RowEmpty()]:
+            articles!
+                .map((article) => DataRow(cells: [
+              DataCell(Text(article.id!)),
+              DataCell(Text(article.title!)),
+              DataCell(Text(article.created_at.toString())),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
+            ])).toList(),
           ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('3')),
-              DataCell(Text('Is C++ important?')),
-              DataCell(Text('27/11/2022')),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
   @override

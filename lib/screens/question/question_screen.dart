@@ -1,3 +1,5 @@
+import 'package:admin_ipa/model/data_question.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +15,42 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
+  late Future<List<Question>?> _dataFuture;
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
+  DataRow RowEmpty() {
+    return DataRow(cells: [
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+    ]);
+  }
+
+
+  List<Question>? _questionsListFromQuerySnapshot(
+      QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+    List<Question>? res;
+    res = querySnapshot.docs
+        .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+      if (documentSnapshot.exists) {
+        return Question.fromJson(documentSnapshot.data());
+      }
+      return Question.test();
+    }).toList();
+    return res;
+  }
+
+
+  @override
+  void initState() {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+    _dataFuture = _db.collection('questions').get().then(_questionsListFromQuerySnapshot);
+    super.initState();
+  }
+
+
   Row HeaderQuestion()
   {
     return Row(
@@ -48,71 +84,59 @@ class _QuestionScreenState extends State<QuestionScreen> {
   {
     //dosomething
   }
-  Container DataTableQuestion()
+  Widget DataTableQuestion()
   {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: DataTable(
-        columns:  <DataColumn>[
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'ID',
-                style: TextStyle(fontStyle: FontStyle.italic),
+    return FutureBuilder(
+      future: _dataFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<Question>?> snapshot) {
+        List<Question>? questions = snapshot.data;
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          child: DataTable(
+            columns:  <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Question Title',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Question Title',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Created At',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Created At',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                '',
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
-        rows:  <DataRow>[
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('1')),
-              DataCell(Text('How to do this one?')),
-              DataCell(Text('25/11/2022')),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('2')),
-              DataCell(Text('Flutter is so amazing')),
-              DataCell(Text('27/11/2022')),
+            rows:questions==null?[RowEmpty()]:
+            questions!
+                .map((question) => DataRow(cells: [
+              DataCell(Text(question.id!)),
+              DataCell(Text(question.title!)),
+              DataCell(Text(question.created_at.toString())),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
+            ])).toList(),
           ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('3')),
-              DataCell(Text('Is C++ important?')),
-              DataCell(Text('27/11/2022')),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
   @override
