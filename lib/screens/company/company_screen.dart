@@ -1,3 +1,5 @@
+import 'package:admin_ipa/model/data_company.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +16,19 @@ class CompanyScreen extends StatefulWidget {
 
 class _CompanyScreenState extends State<CompanyScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  late Future<List<Company>?> _dataFuture;
+
+  List<Company>? _companiesFromQuerySnapshot(
+      QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+    return querySnapshot.docs
+        .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+      if (documentSnapshot.exists) {
+        return Company.fromDocumentSnapshot(documentSnapshot);
+      }
+      return Company.test();
+    }).toList();
+  }
+
   Row HeaderCompany()
   {
     return Row(
@@ -47,49 +62,70 @@ class _CompanyScreenState extends State<CompanyScreen> {
   {
     //dosomething
   }
-  Container DataTableCompany()
+
+  DataRow RowEmpty() {
+    return DataRow(cells: [
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+    ]);
+  }
+
+
+  @override
+  void initState() {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+    _dataFuture = _db.collection('companies').get().then(_companiesFromQuerySnapshot);
+    super.initState();
+  }
+  Widget DataTableCompany()
   {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: DataTable(
-        columns:  <DataColumn>[
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'ID',
-                style: TextStyle(fontStyle: FontStyle.italic),
+    return FutureBuilder(
+      future: _dataFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<Company>?> snapshot) {
+        List<Company>? companies = snapshot.data;
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          child: DataTable(
+            columns:  <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Name',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Name',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Image',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Image',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                '',
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
-        rows:  <DataRow>[
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('1')),
-              DataCell(Text('LG')),
+            ],
+            rows:companies==null?[RowEmpty()]:
+            companies!
+                .map((company) => DataRow(cells: [
+              DataCell(Text(company.id!)),
+              DataCell(Text(company.name!)),
               DataCell(
                   Container(
                     height: MediaQuery.of(context).size.height / 9 - 20,
@@ -100,62 +136,16 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         color: Colors.black),
                     child: Center(
                         child: Image(
-                          image: AssetImage('assets/lg_is.png'),
+                          image: NetworkImage(company.logoUrl!),
                           height: MediaQuery.of(context).size.height / 9,
                           width: MediaQuery.of(context).size.width / 10,
                         )),
                   )),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
+            ])).toList(),
           ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('2')),
-              DataCell(Text('Sam Sung')),
-              DataCell(
-                  Container(
-                    height: MediaQuery.of(context).size.height / 9 - 20,
-                    width: MediaQuery.of(context).size.height / 9 + 30,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(16),
-                        color: Colors.black),
-                    child: Center(
-                        child: Image(
-                          image: AssetImage('assets/samsung_is.png'),
-                          height: MediaQuery.of(context).size.height / 9,
-                          width: MediaQuery.of(context).size.width / 10,
-                        )),
-                  )
-              ),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('3')),
-              DataCell(Text('Fujitsu')),
-              DataCell(
-                  Container(
-                    height: MediaQuery.of(context).size.height / 9 - 20,
-                    width: MediaQuery.of(context).size.height / 9 + 30,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(16),
-                        color: Colors.black),
-                    child: Center(
-                        child: Image(
-                          image: AssetImage('assets/fujitsu_is.png'),
-                          height: MediaQuery.of(context).size.height / 9,
-                          width: MediaQuery.of(context).size.width / 10,
-                        )),
-                  )
-              ),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
   @override

@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
 import '../../style/style.dart';
+import '../model/data_experience.dart';
 
 
 class ExperienceScreen extends StatefulWidget {
   const ExperienceScreen({Key? key}) : super(key: key);
+
 
   @override
   State<ExperienceScreen> createState() => _ExperienceScreenState();
@@ -15,6 +18,36 @@ class ExperienceScreen extends StatefulWidget {
 class _ExperienceScreenState extends State<ExperienceScreen> {
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  late Future<List<ExperiencePost>?> _dataFuture;
+
+  List<ExperiencePost>? _experienceFromQuerySnapshot(
+      QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+    return querySnapshot.docs
+        .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+      if (documentSnapshot.exists) {
+        return ExperiencePost.fromDocumentSnapshot(documentSnapshot);
+      }
+      return ExperiencePost.test();
+    }).toList();
+  }
+
+  @override
+  void initState() {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+    _dataFuture = _db.collection('experience').get().then(_experienceFromQuerySnapshot);
+    super.initState();
+  }
+
+
+  DataRow RowEmpty() {
+    return DataRow(cells: [
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+    ]);
+  }
+
   Row HeaderExperience()
   {
     return Row(
@@ -48,8 +81,60 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
   {
     //dosomething
   }
-  Container DataTableExperience()
+  Widget DataTableExperience()
   {
+
+    return FutureBuilder(
+      future: _dataFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<ExperiencePost>?> snapshot) {
+        List<ExperiencePost>? topics = snapshot.data;
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          child: DataTable(
+            columns:  <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Title',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Created at',
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
+              )
+            ],
+            rows:topics==null?[RowEmpty()]:
+            topics!
+                .map((post) => DataRow(cells: [
+              DataCell(Text(post.topic_id!)),
+              DataCell(Text(post.title!)),
+              DataCell(Text(post.created_at.toString()!)),
+              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
+            ])).toList(),
+          ),
+        );
+      },
+    );
     return Container(
       width: MediaQuery.of(context).size.width,
       child: DataTable(

@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
+import '../../model/data_topic.dart';
 import '../../style/style.dart';
 
 
@@ -15,6 +17,20 @@ class TopicScreen extends StatefulWidget {
 class _TopicScreenState extends State<TopicScreen> {
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  late Future<List<Topic>?> _dataFuture;
+
+  List<Topic>? _topicsFromQuerySnapshot(
+      QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+    return querySnapshot.docs
+        .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+      if (documentSnapshot.exists) {
+        return Topic.fromDocumentSnapshot(documentSnapshot);
+      }
+      return Topic.test();
+    }).toList();
+  }
+
+
   Row HeaderTopic()
   {
     return Row(
@@ -44,66 +60,74 @@ class _TopicScreenState extends State<TopicScreen> {
         ]);
   }
 
+  DataRow RowEmpty() {
+    return DataRow(cells: [
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+    ]);
+  }
+
+
+
   void removeTopict()
   {
     //dosomething
   }
-  Container DataTableTopic()
+  Widget DataTableTopic()
   {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: DataTable(
-        columns:  <DataColumn>[
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'ID',
-                style: TextStyle(fontStyle: FontStyle.italic),
+    return FutureBuilder(
+      future: _dataFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<Topic>?> snapshot) {
+        List<Topic>? topics = snapshot.data;
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          child: DataTable(
+            columns:  <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Topic Name',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Topic Name',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                '',
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
-        rows:  <DataRow>[
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('1')),
-              DataCell(Text('Others')),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
             ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('2')),
-              DataCell(Text('Skills')),
+            rows:topics==null?[RowEmpty()]:
+            topics!
+                .map((topic) => DataRow(cells: [
+              DataCell(Text(topic.topic_id!)),
+              DataCell(Text(topic.topic_name!)),
               DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
+            ])).toList(),
           ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('3')),
-              DataCell(Text('Clothes')),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
+
+  @override
+  void initState() {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+    _dataFuture = _db.collection('topic').get().then(_topicsFromQuerySnapshot);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
