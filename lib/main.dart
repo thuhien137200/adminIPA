@@ -1,5 +1,6 @@
 import 'package:admin_ipa/controller/color_theme_controller.dart';
 import 'package:admin_ipa/screens/Quizzes/quizzes_screen.dart';
+import 'package:admin_ipa/screens/login/login_screen.dart';
 import 'package:admin_ipa/services/quizzes_services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
               print("Error: ${snapshot.error.toString()}");
             }
             if (snapshot.connectionState == ConnectionState.done) {
-              return const MyHomePage();
+              return const LoginScreen();
             }
             return Center(child: CircularProgressIndicator());
           }),
@@ -59,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar(context),
       body(context),
     ]);
+    // return LoginScreen();
   }
 
   Container body(BuildContext context) {
