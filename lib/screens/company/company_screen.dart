@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
+import '../../controller/color_theme_controller.dart';
 import '../../style/style.dart';
-
 
 class CompanyScreen extends StatefulWidget {
   const CompanyScreen({Key? key}) : super(key: key);
@@ -29,37 +29,37 @@ class _CompanyScreenState extends State<CompanyScreen> {
     }).toList();
   }
 
-  Row HeaderCompany()
-  {
-    return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PrimaryText(
-                      text: 'Company',
-                      size: 30,
-                      fontWeight: FontWeight.w800),
-                  PrimaryText(
-                    text: 'Manage All Company Detail',
-                    size: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xffa6a6a6),
-                  )
-                ]),
-          ),
-          Spacer(
-            flex: 1,
-          ),
-          IconButton(onPressed: (){}, icon: Icon(Icons.add))
-        ]);
+  Row HeaderCompany() {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      SizedBox(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PrimaryText(
+                text: 'Company',
+                size: 30,
+                fontWeight: FontWeight.w800,
+                color: ColorController().getColor().colorText,
+              ),
+              PrimaryText(
+                text: 'Manage All Company Detail',
+                size: 16,
+                fontWeight: FontWeight.w400,
+                color: ColorController().getColor().colorText.withOpacity(0.5),
+              )
+            ]),
+      ),
+      Spacer(
+        flex: 1,
+      ),
+      IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.add, color: ColorController().getColor().colorText))
+    ]);
   }
 
-  void removeCompany()
-  {
+  void removeCompany() {
     //dosomething
   }
 
@@ -72,28 +72,51 @@ class _CompanyScreenState extends State<CompanyScreen> {
     ]);
   }
 
+  TextStyle textStyleTableHeader() => TextStyle(
+      fontStyle: FontStyle.italic,
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope-ExtraBold",
+      fontSize: 20,
+      fontWeight: FontWeight.w100);
+  TextStyle textStyleTableContent() => TextStyle(
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope",
+      fontSize: 16,
+      fontWeight: FontWeight.w100);
 
   @override
   void initState() {
     FirebaseFirestore _db = FirebaseFirestore.instance;
-    _dataFuture = _db.collection('companies').get().then(_companiesFromQuerySnapshot);
+    _dataFuture =
+        _db.collection('companies').get().then(_companiesFromQuerySnapshot);
     super.initState();
   }
-  Widget DataTableCompany()
-  {
+
+  Widget DataTableCompany() {
     return FutureBuilder(
       future: _dataFuture,
       builder: (BuildContext context, AsyncSnapshot<List<Company>?> snapshot) {
         List<Company>? companies = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              color: ColorController().getColor().colorBox,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: ColorController()
+                        .getColor()
+                        .colorShadowBox
+                        .withOpacity(0.5),
+                    blurRadius: 10)
+              ]),
           child: DataTable(
-            columns:  <DataColumn>[
+            columns: <DataColumn>[
               DataColumn(
                 label: Expanded(
                   child: Text(
                     'ID',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -101,7 +124,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                 label: Expanded(
                   child: Text(
                     'Name',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -109,7 +132,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                 label: Expanded(
                   child: Text(
                     'Image',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -121,33 +144,47 @@ class _CompanyScreenState extends State<CompanyScreen> {
                 ),
               ),
             ],
-            rows:companies==null?[RowEmpty()]:
-            companies!
-                .map((company) => DataRow(cells: [
-              DataCell(Text(company.id!)),
-              DataCell(Text(company.name!)),
-              DataCell(
-                  Container(
-                    height: MediaQuery.of(context).size.height / 9 - 20,
-                    width: MediaQuery.of(context).size.height / 9 + 30,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(16),
-                        color: Colors.black),
-                    child: Center(
-                        child: Image(
-                          image: NetworkImage(company.logoUrl!),
-                          height: MediaQuery.of(context).size.height / 9,
-                          width: MediaQuery.of(context).size.width / 10,
-                        )),
-                  )),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ])).toList(),
+            rows: companies == null
+                ? [RowEmpty()]
+                : companies!
+                    .map((company) => DataRow(cells: [
+                          DataCell(Text(
+                            company.id!,
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(Text(
+                            company.name!,
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(Container(
+                            height: MediaQuery.of(context).size.height / 9 - 20,
+                            width: MediaQuery.of(context).size.height / 9 + 30,
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(16),
+                                color: ColorController().getColor().colorBox),
+                            child: Center(
+                                child: Image(
+                              image: NetworkImage(company.logoUrl!),
+                              height: MediaQuery.of(context).size.height / 9,
+                              width: MediaQuery.of(context).size.width / 10,
+                            )),
+                          )),
+                          DataCell(IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                CupertinoIcons.xmark_circle_fill,
+                                color: ColorController().getColor().colorText,
+                              ))),
+                        ]))
+                    .toList(),
           ),
         );
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -160,6 +197,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
             Expanded(
                 flex: 10,
                 child: SafeArea(
+                    child: Container(
+                  color: ColorController().getColor().colorBody,
+                  height: MediaQuery.of(context).size.height,
                   child: SingleChildScrollView(
                     padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
                     child: Column(
@@ -173,14 +213,10 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       ],
                     ),
                   ),
-                )),
+                ))),
           ],
         ),
       ),
     );
-
-
   }
-
 }
-

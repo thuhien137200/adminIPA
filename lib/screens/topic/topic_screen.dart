@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
+import '../../controller/color_theme_controller.dart';
 import '../../model/data_topic.dart';
 import '../../style/style.dart';
-
 
 class TopicScreen extends StatefulWidget {
   const TopicScreen({Key? key}) : super(key: key);
@@ -15,7 +15,6 @@ class TopicScreen extends StatefulWidget {
 }
 
 class _TopicScreenState extends State<TopicScreen> {
-
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   late Future<List<Topic>?> _dataFuture;
 
@@ -30,34 +29,37 @@ class _TopicScreenState extends State<TopicScreen> {
     }).toList();
   }
 
-
-  Row HeaderTopic()
-  {
-    return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PrimaryText(
-                      text: 'Topic',
-                      size: 30,
-                      fontWeight: FontWeight.w800),
-                  PrimaryText(
-                    text: 'Manage All Topic',
-                    size: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xffa6a6a6),
-                  )
-                ]),
-          ),
-          Spacer(
-            flex: 1,
-          ),
-          IconButton(onPressed: (){}, icon: Icon(Icons.add))
-        ]);
+  Row HeaderTopic() {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      SizedBox(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PrimaryText(
+                text: 'Topic',
+                size: 30,
+                fontWeight: FontWeight.w800,
+                color: ColorController().getColor().colorText,
+              ),
+              PrimaryText(
+                text: 'Manage All Topic',
+                size: 16,
+                fontWeight: FontWeight.w400,
+                color: ColorController().getColor().colorText.withOpacity(0.5),
+              )
+            ]),
+      ),
+      Spacer(
+        flex: 1,
+      ),
+      IconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.add,
+            color: ColorController().getColor().colorText,
+          ))
+    ]);
   }
 
   DataRow RowEmpty() {
@@ -68,27 +70,46 @@ class _TopicScreenState extends State<TopicScreen> {
     ]);
   }
 
+  TextStyle textStyleTableHeader() => TextStyle(
+      fontStyle: FontStyle.italic,
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope-ExtraBold",
+      fontSize: 20,
+      fontWeight: FontWeight.w100);
+  TextStyle textStyleTableContent() => TextStyle(
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope",
+      fontSize: 16,
+      fontWeight: FontWeight.w100);
 
-
-  void removeTopict()
-  {
+  void removeTopict() {
     //dosomething
   }
-  Widget DataTableTopic()
-  {
+  Widget DataTableTopic() {
     return FutureBuilder(
       future: _dataFuture,
       builder: (BuildContext context, AsyncSnapshot<List<Topic>?> snapshot) {
         List<Topic>? topics = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              color: ColorController().getColor().colorBox,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: ColorController()
+                        .getColor()
+                        .colorShadowBox
+                        .withOpacity(0.5),
+                    blurRadius: 10)
+              ]),
           child: DataTable(
-            columns:  <DataColumn>[
+            columns: <DataColumn>[
               DataColumn(
                 label: Expanded(
                   child: Text(
                     'ID',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -96,7 +117,7 @@ class _TopicScreenState extends State<TopicScreen> {
                 label: Expanded(
                   child: Text(
                     'Topic Name',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -108,13 +129,26 @@ class _TopicScreenState extends State<TopicScreen> {
                 ),
               ),
             ],
-            rows:topics==null?[RowEmpty()]:
-            topics!
-                .map((topic) => DataRow(cells: [
-              DataCell(Text(topic.topic_id!)),
-              DataCell(Text(topic.topic_name!)),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ])).toList(),
+            rows: topics == null
+                ? [RowEmpty()]
+                : topics!
+                    .map((topic) => DataRow(cells: [
+                          DataCell(Text(
+                            topic.topic_id!,
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(Text(
+                            topic.topic_name!,
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                CupertinoIcons.xmark_circle_fill,
+                                color: ColorController().getColor().colorText,
+                              ))),
+                        ]))
+                    .toList(),
           ),
         );
       },
@@ -138,28 +172,29 @@ class _TopicScreenState extends State<TopicScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-                flex: 10,
-                child: SafeArea(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        HeaderTopic(),
-                        SizedBox(
-                          height: SizeConfig.blockSizeVertical * 2.5,
-                        ),
-                        DataTableTopic()
-                      ],
-                    ),
+              flex: 10,
+              child: SafeArea(
+                  child: Container(
+                color: ColorController().getColor().colorBody,
+                height: MediaQuery.of(context).size.height,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      HeaderTopic(),
+                      SizedBox(
+                        height: SizeConfig.blockSizeVertical * 2.5,
+                      ),
+                      DataTableTopic(),
+                    ],
                   ),
-                )),
+                ),
+              )),
+            )
           ],
         ),
       ),
     );
-
-
   }
-
 }

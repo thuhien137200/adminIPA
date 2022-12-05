@@ -3,11 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
+import '../../controller/color_theme_controller.dart';
 import '../../model/data_article.dart';
 import '../../services/articles_service.dart';
 import '../../style/style.dart';
-
-
 
 class ArticleScreen extends StatefulWidget {
   const ArticleScreen({Key? key}) : super(key: key);
@@ -17,7 +16,6 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
-
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   late Future<List<ArticlePost>?> _dataFuture;
@@ -25,7 +23,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
   @override
   void initState() {
     FirebaseFirestore _db = FirebaseFirestore.instance;
-    _dataFuture = _db.collection('articles').get().then(_articlesFromQuerySnapshot);
+    _dataFuture =
+        _db.collection('articles').get().then(_articlesFromQuerySnapshot);
     super.initState();
   }
 
@@ -40,39 +39,54 @@ class _ArticleScreenState extends State<ArticleScreen> {
     }).toList();
   }
 
-  Row HeaderArticle()
-  {
-    return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PrimaryText(
-                      text: 'Article',
-                      size: 30,
-                      fontWeight: FontWeight.w800),
-                  PrimaryText(
-                    text: 'Manage All Article post',
-                    size: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xffa6a6a6),
-                  )
-                ]),
-          ),
-          Spacer(
-            flex: 1,
-          ),
-          IconButton(onPressed: (){}, icon: Icon(Icons.add))
-        ]);
+  Row HeaderArticle() {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      SizedBox(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PrimaryText(
+                text: 'Article',
+                size: 30,
+                fontWeight: FontWeight.w800,
+                color: ColorController().getColor().colorText,
+              ),
+              PrimaryText(
+                text: 'Manage All Article post',
+                size: 16,
+                fontWeight: FontWeight.w400,
+                color: ColorController().getColor().colorText.withOpacity(0.5),
+              )
+            ]),
+      ),
+      Spacer(
+        flex: 1,
+      ),
+      IconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.add,
+            color: ColorController().getColor().colorText,
+          ))
+    ]);
   }
 
-  void removeArtice()
-  {
+  void removeArtice() {
     //dosomething
   }
+
+  TextStyle textStyleTableHeader() => TextStyle(
+      fontStyle: FontStyle.italic,
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope-ExtraBold",
+      fontSize: 20,
+      fontWeight: FontWeight.w100);
+  TextStyle textStyleTableContent() => TextStyle(
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope",
+      fontSize: 16,
+      fontWeight: FontWeight.w100);
 
   DataRow RowEmpty() {
     return DataRow(cells: [
@@ -83,21 +97,32 @@ class _ArticleScreenState extends State<ArticleScreen> {
     ]);
   }
 
-  Widget DataTableArticle()
-  {
+  Widget DataTableArticle() {
     return FutureBuilder(
       future: _dataFuture,
-      builder: (BuildContext context, AsyncSnapshot<List<ArticlePost>?> snapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<List<ArticlePost>?> snapshot) {
         List<ArticlePost>? articles = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              color: ColorController().getColor().colorBox,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: ColorController()
+                        .getColor()
+                        .colorShadowBox
+                        .withOpacity(0.5),
+                    blurRadius: 10)
+              ]),
           child: DataTable(
-            columns:  <DataColumn>[
+            columns: <DataColumn>[
               DataColumn(
                 label: Expanded(
                   child: Text(
                     'ID',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -105,7 +130,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 label: Expanded(
                   child: Text(
                     'Article Title',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -113,7 +138,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 label: Expanded(
                   child: Text(
                     'Created At',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -125,19 +150,36 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 ),
               ),
             ],
-            rows:articles==null?[RowEmpty()]:
-            articles!
-                .map((article) => DataRow(cells: [
-              DataCell(Text(article.id!)),
-              DataCell(Text(article.title!)),
-              DataCell(Text(article.created_at.toString())),
-              DataCell(IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ])).toList(),
+            rows: articles == null
+                ? [RowEmpty()]
+                : articles!
+                    .map((article) => DataRow(cells: [
+                          DataCell(Text(
+                            article.id!,
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(Text(
+                            article.title!,
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(Text(
+                            article.created_at.toString(),
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                CupertinoIcons.xmark_circle_fill,
+                                color: ColorController().getColor().colorText,
+                              ))),
+                        ]))
+                    .toList(),
           ),
         );
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -150,17 +192,21 @@ class _ArticleScreenState extends State<ArticleScreen> {
             Expanded(
                 flex: 10,
                 child: SafeArea(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        HeaderArticle(),
-                        SizedBox(
-                          height: SizeConfig.blockSizeVertical * 2.5,
-                        ),
-                        DataTableArticle()
-                      ],
+                  child: Container(
+                    color: ColorController().getColor().colorBody,
+                    child: SingleChildScrollView(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          HeaderArticle(),
+                          SizedBox(
+                            height: SizeConfig.blockSizeVertical * 2.5,
+                          ),
+                          DataTableArticle()
+                        ],
+                      ),
                     ),
                   ),
                 )),
@@ -168,9 +214,5 @@ class _ArticleScreenState extends State<ArticleScreen> {
         ),
       ),
     );
-
-
   }
-
 }
-

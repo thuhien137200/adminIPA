@@ -83,7 +83,7 @@ class _CustomTableState extends State<CustomTable> {
                 child: Text('Option'),
               )),
             ],
-            rows: listCategories.length == 0
+            rows: listSetOfQuiz.length == 0
                 ? [RowEmpty()]
                 : listCategories
                     .map((e) => DataRow(cells: [
@@ -184,6 +184,7 @@ class _CustomTableState extends State<CustomTable> {
                                 onTap: () {
                                   setState(() {
                                     listSetOfQuiz = e.listquiz ?? [];
+
                                     selectTable = 2;
                                   });
                                 },
@@ -281,14 +282,14 @@ class _CustomTableState extends State<CustomTable> {
     );
   }
 
-    DataRow RowEmpty() {
-      return DataRow(cells: [
-        DataCell(Text("Empty")),
-        DataCell(Text("")),
-        DataCell(Text("")),
-        DataCell(Text("")),
-      ]);
-    }
+  DataRow RowEmpty() {
+    return DataRow(cells: [
+      DataCell(Text("Empty")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+    ]);
+  }
 
   TextStyle textStyleTableHeader() => TextStyle(
       color: ColorController().getColor().colorText,
