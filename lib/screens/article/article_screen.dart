@@ -170,6 +170,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
+      DataCell(Text("")),
     ]);
   }
 
@@ -225,6 +226,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   ),
                 ),
               ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
+              ),
             ],
             rows: articles == null
                 ? [RowEmpty()]
@@ -248,6 +256,12 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
+                          DataCell(IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    CupertinoIcons.pen,
+                    color: ColorController().getColor().colorText,
+                  ))),
                         ]))
                     .toList(),
           ),

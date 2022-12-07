@@ -64,6 +64,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
+      DataCell(Text("")),
     ]);
   }
 
@@ -167,13 +168,6 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 },
                               ),
                             ),
-                            // TextFormField(
-                            //   decoration: InputDecoration(
-                            //     labelText: 'Content',
-                            //     // icon: Icon(Icons.email),
-                            //   ),
-                            //   controller: contentController,
-                            // ),
                           ],
                         ),
                       ),
@@ -281,6 +275,13 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                     '',
                   ),
                 ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
               )
             ],
             rows: topics == null
@@ -305,6 +306,12 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
+                          DataCell(IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    CupertinoIcons.pen,
+                    color: ColorController().getColor().colorText,
+                  ))),
                         ]))
                     .toList(),
           ),

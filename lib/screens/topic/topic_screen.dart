@@ -67,6 +67,7 @@ class _TopicScreenState extends State<TopicScreen> {
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
+      DataCell(Text("")),
     ]);
   }
 
@@ -128,6 +129,13 @@ class _TopicScreenState extends State<TopicScreen> {
                   ),
                 ),
               ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
+              ),
             ],
             rows: topics == null
                 ? [RowEmpty()]
@@ -147,6 +155,12 @@ class _TopicScreenState extends State<TopicScreen> {
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
+                          DataCell(IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    CupertinoIcons.pen,
+                    color: ColorController().getColor().colorText,
+                  ))),
                         ]))
                     .toList(),
           ),

@@ -69,6 +69,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
+      DataCell(Text("")),
     ]);
   }
 
@@ -143,6 +144,13 @@ class _CompanyScreenState extends State<CompanyScreen> {
                   ),
                 ),
               ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
+              ),
             ],
             rows: companies == null
                 ? [RowEmpty()]
@@ -177,6 +185,12 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
+                          DataCell(IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    CupertinoIcons.pen,
+                    color: ColorController().getColor().colorText,
+                  ))),
                         ]))
                     .toList(),
           ),
