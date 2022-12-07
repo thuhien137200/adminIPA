@@ -125,7 +125,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                   
                   return AlertDialog(
                     scrollable: true,
-                    title: Text('Login'),
+                    title: Text('Add Experience Post'),
                     content: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Form(

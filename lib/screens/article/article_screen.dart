@@ -76,16 +76,12 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   
                   return AlertDialog(
                     scrollable: true,
-                    title: Text('Login'),
+                    title: Text('Add Article Post'),
                     content: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Form(
                         child: Column(
                           children: <Widget>[
-                           
-
-                              
-
                             TextFormField(
                               decoration: InputDecoration(
                                 labelText: 'Title',
