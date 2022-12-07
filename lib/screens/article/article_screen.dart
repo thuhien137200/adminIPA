@@ -6,6 +6,7 @@ import '../../config/size_config.dart';
 import '../../controller/color_theme_controller.dart';
 import '../../model/data_article.dart';
 import '../../services/articles_service.dart';
+import '../../services/database_service.dart';
 import '../../style/style.dart';
 
 class ArticleScreen extends StatefulWidget {
@@ -64,7 +65,86 @@ class _ArticleScreenState extends State<ArticleScreen> {
         flex: 1,
       ),
       IconButton(
-          onPressed: () {},
+          onPressed: () {
+
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  String content = "";
+                  var titleController = TextEditingController();
+                  var contentController = TextEditingController();
+                  
+                  return AlertDialog(
+                    scrollable: true,
+                    title: Text('Login'),
+                    content: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Form(
+                        child: Column(
+                          children: <Widget>[
+                           
+
+                              
+
+                            TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Title',
+                                //icon: Icon(Icons.account_box),
+                              ),
+                              controller: titleController,
+                            ),
+                            Container(
+                              height: 10 * 24.0,
+                              child: TextField(
+                                controller: contentController,
+                                maxLines: 10,
+                                decoration: InputDecoration(
+                                  hintText: "Content",
+                                  fillColor: Colors.lightBlue[100],
+                                  filled: true,
+                                ),
+                                onChanged: (value) {
+                                  content = value;
+                                },
+                              ),
+                            ),
+                            
+                          ],
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      TextButton(
+                          child: Text("Submit"),
+                          onPressed: () {
+                            ArticlePost articlePost =
+                                ArticlePost(
+                                  null,
+                                  titleController.text,
+                                  DateTime.now(),
+                                  contentController.text,
+                                  null,
+                                  'JOcWUTwArybiZjO9CelOhvBApCT2',
+                                  null,
+                                );
+                                print(articlePost.toString());
+                            // experiencePost.setContent(contentController.text);
+                            // experiencePost.setTitle(titleController.text);
+                            // experiencePost.setCreated_at(DateTime.now());
+                            // ExperiencePost.fromJson(
+                            //     jsonDecode(jsonEncode(experiencePost)));
+                            DatabaseService().addArticle(articlePost);
+                            
+                            Navigator.pop(context);
+                          })
+                    ],
+                  );
+                });
+          },
           icon: Icon(
             Icons.add,
             color: ColorController().getColor().colorText,
@@ -152,7 +232,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
             ],
             rows: articles == null
                 ? [RowEmpty()]
-                : articles!
+                : articles
                     .map((article) => DataRow(cells: [
                           DataCell(Text(
                             article.id!,
