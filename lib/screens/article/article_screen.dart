@@ -76,29 +76,54 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   String content = "";
                   var titleController = TextEditingController();
                   var contentController = TextEditingController();
-                  
+
                   return AlertDialog(
                     scrollable: true,
-                    title: Text('Add Article Post'),
+                    title: Text(
+                      'Add an Article',
+                      style: AppFonts.headStyle,
+                    ),
                     content: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Form(
                         child: Column(
                           children: <Widget>[
-                            TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Title',
-                                //icon: Icon(Icons.account_box),
-                              ),
-                              controller: titleController,
-                            ),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Title',
+                                    style: AppFonts.title,
+                                  ),
+                                ]),
                             Container(
+                              width: 500,
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  fillColor: Colors.lightBlue[100],
+                                  //icon: Icon(Icons.account_box),
+                                ),
+                                style: AppFonts.content,
+                                controller: titleController,
+                              ),
+                            ),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Content',
+                                    style: AppFonts.title,
+                                  ),
+                                ]),
+                            Container(
+                              padding: EdgeInsets.only(top: 16),
                               height: 10 * 24.0,
                               child: TextField(
                                 controller: contentController,
                                 maxLines: 10,
+                                style: AppFonts.content,
                                 decoration: InputDecoration(
-                                  hintText: "Content",
                                   fillColor: Colors.lightBlue[100],
                                   filled: true,
                                 ),
@@ -107,7 +132,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 },
                               ),
                             ),
-                            
                           ],
                         ),
                       ),
@@ -120,31 +144,24 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
-                             articlePost =
-                                ArticlePost(
-                                  null,
-                                  titleController.text,
-                                  DateTime.now(),
-                                  contentController.text,
-                                  null,
-                                  'JOcWUTwArybiZjO9CelOhvBApCT2',
-                                  null,
-                                );
-                                print(articlePost.toString());
-                            // experiencePost.setContent(contentController.text);
-                            // experiencePost.setTitle(titleController.text);
-                            // experiencePost.setCreated_at(DateTime.now());
-                            // ExperiencePost.fromJson(
-                            //     jsonDecode(jsonEncode(experiencePost)));
+                            ArticlePost articlePost = ArticlePost(
+                              null,
+                              titleController.text,
+                              DateTime.now(),
+                              contentController.text,
+                              null,
+                              'JOcWUTwArybiZjO9CelOhvBApCT2',
+                              null,
+                            );
+                            print(articlePost.toString());
                             DatabaseService().addArticle(articlePost);
+
                             Navigator.pop(context);
                           })
                     ],
                   );
                 });
-            setState(() {
-              print('hehehe');
-            });
+
           },
           icon: Icon(
             Icons.add,
