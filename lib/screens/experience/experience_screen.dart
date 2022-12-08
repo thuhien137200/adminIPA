@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:admin_ipa/services/database_service.dart';
+import 'package:admin_ipa/services/experience_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../../config/size_config.dart';
 import '../../controller/color_theme_controller.dart';
 import '../../model/data_experience.dart';
+import '../../model/data_topic.dart';
 import '../../style/style.dart';
 
 class ExperienceScreen extends StatefulWidget {
@@ -16,7 +21,11 @@ class ExperienceScreen extends StatefulWidget {
 
 class _ExperienceScreenState extends State<ExperienceScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  var topicController= TextEditingController();
   late Future<List<ExperiencePost>?> _dataFuture;
+  final _formKey = GlobalKey<FormState>();
+  late Future<List<Topic>?> _topicFuture;
+   String topicId ='';
 
   List<ExperiencePost>? _experienceFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
@@ -34,7 +43,19 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     FirebaseFirestore _db = FirebaseFirestore.instance;
     _dataFuture =
         _db.collection('experience').get().then(_experienceFromQuerySnapshot);
+    _topicFuture = _db.collection('topic').get().then(_topicsFromQuerySnapshot);
     super.initState();
+  }
+
+  List<Topic>? _topicsFromQuerySnapshot(
+      QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+    return querySnapshot.docs
+        .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+      if (documentSnapshot.exists) {
+        return Topic.fromDocumentSnapshot(documentSnapshot);
+      }
+      return Topic.test();
+    }).toList();
   }
 
   DataRow RowEmpty() {
@@ -43,7 +64,29 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
+      DataCell(Text("")),
     ]);
+  }
+
+  Container topicSelection(Topic topic) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        color: Color.fromARGB(255, 105, 179, 240),
+      ),
+      child: InkWell(
+        onTap: (){
+          setState(() {
+            topicController.text=(topic.topic_name??'Null') ;
+            //topicName=topic.topic_name??'Null';
+            topicId=topic.idTopic;
+            print(topicId);
+          });
+        },
+        child: Text(topic.topic_name ?? 'null')
+        ),
+    );
   }
 
   Row HeaderExperience() {
@@ -71,7 +114,96 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
         flex: 1,
       ),
       IconButton(
-          onPressed: () {},
+          onPressed: () async {
+            var topics = await _topicFuture;
+            //print('Topic: ${topics?.length ?? 0}');
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  String content = "";
+                  var titleController = TextEditingController();
+                  var contentController = TextEditingController();
+                  
+                  return AlertDialog(
+                    scrollable: true,
+                    title: Text('Add Experience Post'),
+                    content: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Form(
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                ...(topics!.map((e) => topicSelection(e))),
+                              ],
+                            ),
+
+                            TextFormField(
+                               decoration: InputDecoration(
+                                labelText: 'Topic',
+                                //icon: Icon(Icons.account_box),
+                              ),
+                              controller: topicController,
+                            ),
+
+                            TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Title',
+                                //icon: Icon(Icons.account_box),
+                              ),
+                              controller: titleController,
+                            ),
+                            Container(
+                              height: 10 * 24.0,
+                              child: TextField(
+                                controller: contentController,
+                                maxLines: 10,
+                                decoration: InputDecoration(
+                                  hintText: "Content",
+                                  fillColor: Colors.lightBlue[100],
+                                  filled: true,
+                                ),
+                                onChanged: (value) {
+                                  content = value;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      TextButton(
+                          child: Text("Submit"),
+                          onPressed: () {
+                            ExperiencePost experiencePost =
+                                ExperiencePost(
+                                  null,
+                                  topicId,
+                                  titleController.text,
+                                  DateTime.now(),
+                                  contentController.text,
+                                  null,
+                                  null,
+                                );
+                                print(experiencePost.toString());
+                            // experiencePost.setContent(contentController.text);
+                            // experiencePost.setTitle(titleController.text);
+                            // experiencePost.setCreated_at(DateTime.now());
+                            // ExperiencePost.fromJson(
+                            //     jsonDecode(jsonEncode(experiencePost)));
+                            DatabaseService().addExperiencePost(experiencePost);
+                            
+                            Navigator.pop(context);
+                          })
+                    ],
+                  );
+                });
+          },
           icon: Icon(Icons.add, color: ColorController().getColor().colorText))
     ]);
   }
@@ -143,11 +275,18 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                     '',
                   ),
                 ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    '',
+                  ),
+                ),
               )
             ],
             rows: topics == null
                 ? [RowEmpty()]
-                : topics!
+                : topics
                     .map((post) => DataRow(cells: [
                           DataCell(Text(
                             post.topic_id!,
@@ -158,7 +297,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                             style: textStyleTableContent(),
                           )),
                           DataCell(Text(
-                            post.created_at.toString()!,
+                            post.created_at.toString(),
                             style: textStyleTableContent(),
                           )),
                           DataCell(IconButton(
@@ -167,12 +306,19 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
+                          DataCell(IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    CupertinoIcons.pen,
+                    color: ColorController().getColor().colorText,
+                  ))),
                         ]))
                     .toList(),
           ),
         );
       },
     );
+
     return Container(
       width: MediaQuery.of(context).size.width,
       child: DataTable(

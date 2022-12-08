@@ -28,6 +28,20 @@ mixin ExperienceService{
     return _db.collection('experience').get().then(_experienceFromQuerySnapshot);
   }
 
+  void addExperiencePost(ExperiencePost experiencePost) async {
+    DocumentReference doc = _db.collection('experience').doc();
+    String doc_id = doc.id;
+    if (experiencePost.post_id == null) experiencePost.setPostId(doc_id);
 
+
+
+    CollectionReference subcollection =
+        _db.collection('experience').doc(doc_id).collection('comments');
+
+    doc
+        .set(experiencePost.toJson())
+        .then((value) => print('ExperiencePost added successfully'))
+        .catchError((error) => print('Failed to add an ExperiencePost'));
+  }
 
 }

@@ -5,8 +5,21 @@ import '../../config/responsive.dart';
 
 
 class BarChartCopmponent extends StatelessWidget {
-  const BarChartCopmponent({
+
+  int account;
+  int article;
+  int question;
+  int experience;
+  int company;
+  int quiz;
+   BarChartCopmponent({
     Key? key,
+    required this.account,
+     required this.article,
+     required this.question,
+     required this.experience,
+    required this.company,
+     required this.quiz,
   }) : super(key: key);
 
   @override
@@ -54,7 +67,7 @@ class BarChartCopmponent extends StatelessWidget {
           barGroups: [
             BarChartGroupData(x: 0, barRods: [
               BarChartRodData(
-                  y: 200,
+                  y: account.toDouble(),
                   colors: [Colors.black],
                   borderRadius: BorderRadius.circular(0),
                   width: Responsive.isDesktop(context) ? 40 : 10,
@@ -63,7 +76,7 @@ class BarChartCopmponent extends StatelessWidget {
             ]),
             BarChartGroupData(x: 1, barRods: [
               BarChartRodData(
-                  y: 150,
+                  y: article.toDouble(),
                   colors: [Colors.black],
                   borderRadius: BorderRadius.circular(0),
                   width: Responsive.isDesktop(context) ? 40 : 10,
@@ -72,7 +85,7 @@ class BarChartCopmponent extends StatelessWidget {
             ]),
             BarChartGroupData(x: 2, barRods: [
               BarChartRodData(
-                  y: 180,
+                  y: question.toDouble(),
                   colors: [Colors.black],
                   borderRadius: BorderRadius.circular(0),
                   width: Responsive.isDesktop(context) ? 40 : 10,
@@ -81,7 +94,7 @@ class BarChartCopmponent extends StatelessWidget {
             ]),
             BarChartGroupData(x: 3, barRods: [
               BarChartRodData(
-                  y: 128,
+                  y: experience.toDouble(),
                   colors: [Colors.black],
                   borderRadius: BorderRadius.circular(0),
                   width: Responsive.isDesktop(context) ? 40 : 10,
@@ -90,7 +103,7 @@ class BarChartCopmponent extends StatelessWidget {
             ]),
             BarChartGroupData(x: 4, barRods: [
               BarChartRodData(
-                  y: 150,
+                  y: company.toDouble(),
                   colors: [Colors.black],
                   borderRadius: BorderRadius.circular(0),
                   width: Responsive.isDesktop(context) ? 40 : 10,
@@ -99,7 +112,7 @@ class BarChartCopmponent extends StatelessWidget {
             ]),
             BarChartGroupData(x: 5, barRods: [
               BarChartRodData(
-                  y: 240,
+                  y: quiz.toDouble(),
                   colors: [Colors.black],
                   borderRadius: BorderRadius.circular(0),
                   width: Responsive.isDesktop(context) ? 40 : 10,
