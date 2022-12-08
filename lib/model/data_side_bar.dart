@@ -95,7 +95,7 @@ class DatabaseSideBar {
     List<Widget> child = [
       Icon(data.iconData_onClick, color: Color.fromRGBO(124, 116, 228, 1))
     ];
-    if (width > 165)
+    if (width > 185)
       child.add(Text(
         data.content,
         textAlign: TextAlign.end,
@@ -123,7 +123,7 @@ class DatabaseSideBar {
     List<Widget> child = [
       Icon(data.iconData, color: Color.fromRGBO(129, 105, 155, 1))
     ];
-    if (width > 165)
+    if (width > 185)
       child.add(Text(
         data.content,
         textAlign: TextAlign.end,
