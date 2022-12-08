@@ -128,7 +128,7 @@ class Login extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         if (snapshot.hasError) {
-                          print("Loi cmnr ${snapshot.error}");
+                          print("Loi ${snapshot.error}");
                         }
                         if (snapshot.connectionState == ConnectionState.done) {
                           // print(snapshot.data!.length);

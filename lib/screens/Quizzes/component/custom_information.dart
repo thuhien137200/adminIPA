@@ -1,10 +1,13 @@
 import 'package:admin_ipa/controller/color_theme_controller.dart';
 import 'package:admin_ipa/screens/quizzes/component/overview.dart';
+import 'package:admin_ipa/screens/quizzes/component/style_table.dart';
+import 'package:admin_ipa/screens/quizzes/controller/quizzes_controller.dart';
 import 'package:admin_ipa/services/quizzes_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../model/data_quizzes.dart';
+import 'custom_box_information.dart';
 
 class CustomTable extends StatefulWidget {
   const CustomTable({Key? key}) : super(key: key);
@@ -28,290 +31,220 @@ class _CustomTableState extends State<CustomTable> {
 
   Column tableInformationSetOfQuiz() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            GestureDetector(
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: ColorController().getColor().colorText,
-              ),
-              onTap: () {
-                setState(() {
-                  selectTable = 1;
-                });
-              },
-            ),
-            Text(
-              "  Set of Quiz",
-              style: textStyleHeader(),
-            ),
-            Spacer(),
-            Icon(
-              Icons.add,
-              color: ColorController().getColor().colorText,
-              size: 32,
-            )
-          ],
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            dataTextStyle: textStyleTableContent(),
-            headingTextStyle: textStyleTableHeader(),
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Expanded(
-                  child: Text('Quiz name'),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text('Time created'),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text('Number of question'),
-                ),
-              ),
-              DataColumn(
-                  label: Expanded(
-                child: Text('Option'),
-              )),
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              GestureDetector(
+                  child: Icon(Icons.arrow_back_ios_new_rounded,
+                      color: ColorController().getColor().colorText),
+                  onTap: () {
+                    setState(() {
+                      selectTable = 1;
+                    });
+                  }),
+              Text("  Set of Quiz", style: StyleTable().textStyleHeader()),
+              Spacer(),
+              GestureDetector(
+                onTap: () {
+                  QuizzesController.key.currentState!.openEndDrawer();
+                },
+                child: Icon(Icons.add,
+                    color: ColorController().getColor().colorText, size: 32),
+              )
             ],
-            rows: listSetOfQuiz.length == 0
-                ? [RowEmpty()]
-                : listCategories
-                    .map((e) => DataRow(cells: [
-                          DataCell(Text(e.name ?? "")),
-                          DataCell(Text(e.time_created.toString())),
-                          DataCell(Text(e.number_quiz.toString())),
-                          DataCell(Row(
-                            children: [
-                              Spacer(),
-                              Icon(Icons.edit_outlined,
-                                  color:
-                                      ColorController().getColor().colorText),
-                            ],
-                          ))
-                        ]))
-                    .toList(),
           ),
-        )
-      ],
-    );
+          SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                  dataTextStyle: StyleTable().textStyleTableContent(),
+                  headingTextStyle: StyleTable().textStyleTableHeader(),
+                  columns: const <DataColumn>[
+                    DataColumn(label: Text('Quiz name')),
+                    DataColumn(label: Text('Time created')),
+                    DataColumn(label: Text('Number of question')),
+                    DataColumn(label: Text('Option'))
+                  ],
+                  rows: listSetOfQuiz.isEmpty
+                      ? [StyleTable().RowEmpty()]
+                      : listSetOfQuiz
+                          .map((e) => DataRow(cells: [
+                                DataCell(Text(e.name ?? "")),
+                                DataCell(Text(e.time_created.toString())),
+                                DataCell(Text(e.number_question.toString())),
+                                DataCell(Row(children: [
+                                  Icon(Icons.edit_outlined,
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText),
+                                  Icon(Icons.highlight_off_rounded,
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText),
+                                ]))
+                              ]))
+                          .toList()))
+        ]);
   }
 
   Column tableInformationCategories() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
             GestureDetector(
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: ColorController().getColor().colorText,
-              ),
-              onTap: () {
-                setState(() {
-                  selectTable = 0;
-                });
-              },
-            ),
-            Text(
-              "  Categories",
-              style: textStyleHeader(),
-            ),
+                child: Icon(Icons.arrow_back_ios_new_rounded,
+                    color: ColorController().getColor().colorText),
+                onTap: () {
+                  setState(() {
+                    selectTable = 0;
+                  });
+                }),
+            Text("  Categories", style: StyleTable().textStyleHeader()),
             Spacer(),
-            Icon(
-              Icons.add,
-              color: ColorController().getColor().colorText,
-              size: 32,
+            GestureDetector(
+              onTap: () {
+                _settingModalBottomSheet(context);
+              },
+              child: Icon(Icons.add,
+                  color: ColorController().getColor().colorText, size: 32),
             )
-          ],
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            dataTextStyle: textStyleTableContent(),
-            headingTextStyle: textStyleTableHeader(),
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Expanded(
-                  child: Text('Categories name'),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text('Time created'),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text('Number set of quiz'),
-                ),
-              ),
-              DataColumn(
-                  label: Expanded(
-                child: Text('Option'),
-              )),
-            ],
-            rows: listCategories.length == 0
-                ? [RowEmpty()]
-                : listCategories
-                    .map((e) => DataRow(cells: [
-                          DataCell(Text(e.name ?? "")),
-                          DataCell(Text(e.time_created.toString())),
-                          DataCell(Text(e.number_quiz.toString())),
-                          DataCell(Row(
-                            children: [
-                              Spacer(),
-                              Icon(Icons.edit_outlined,
-                                  color:
-                                      ColorController().getColor().colorText),
-                              // (e.number_quiz ?? 0) > 0 ?
-                              InkWell(
-                                child: Icon(Icons.navigate_next_rounded,
-                                    color:
-                                        ColorController().getColor().colorText),
-                                onTap: () {
-                                  setState(() {
-                                    listSetOfQuiz = e.listquiz ?? [];
-
-                                    selectTable = 2;
-                                  });
-                                },
-                              )
-                              // : SizedBox(),
-                            ],
-                          ))
-                        ]))
-                    .toList(),
-          ),
-        )
-      ],
-    );
+          ]),
+          SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                  dataTextStyle: StyleTable().textStyleTableContent(),
+                  headingTextStyle: StyleTable().textStyleTableHeader(),
+                  columns: const <DataColumn>[
+                    DataColumn(label: Text('Categories name')),
+                    DataColumn(label: Text('Time created')),
+                    DataColumn(label: Text('Number set of quiz')),
+                    DataColumn(label: Text('Option'))
+                  ],
+                  rows: listCategories.length == 0
+                      ? [StyleTable().RowEmpty()]
+                      : listCategories
+                          .map((e) => DataRow(cells: [
+                                DataCell(Text(e.name ?? "")),
+                                DataCell(Text(e.time_created.toString())),
+                                DataCell(Text(e.number_quiz.toString())),
+                                DataCell(Row(children: [
+                                  Icon(Icons.edit_outlined,
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText),
+                                  Icon(Icons.highlight_off_rounded,
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText),
+                                  InkWell(
+                                      child: Icon(Icons.navigate_next_rounded,
+                                          color: ColorController()
+                                              .getColor()
+                                              .colorText),
+                                      onTap: () {
+                                        setState(() {
+                                          listSetOfQuiz = e.listquiz ?? [];
+                                          QuizzesController.categoriesId =
+                                              e.id ?? "";
+                                          QuizzesController.selected = 2;
+                                          selectTable = 2;
+                                        });
+                                      })
+                                ]))
+                              ]))
+                          .toList()))
+        ]);
   }
 
   Column tableInformationJob() {
     listJob = OverviewQuiz.listJob;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Job",
-              style: textStyleHeader(),
-            ),
-            Icon(
-              Icons.add,
-              color: ColorController().getColor().colorText,
-              size: 32,
-            )
-          ],
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            dataTextStyle: textStyleTableContent(),
-            headingTextStyle: textStyleTableHeader(),
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Expanded(
-                  child: Text('Job name'),
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Job", style: StyleTable().textStyleHeader()),
+              GestureDetector(
+                onTap: () {},
+                child: GestureDetector(
+                  onTap: () {
+                    _settingModalBottomSheet(context);
+                  },
+                  child: GestureDetector(
+                    onTap: () {
+                      _settingModalBottomSheet(context);
+                    },
+                    child: Icon(Icons.add,
+                        color: ColorController().getColor().colorText,
+                        size: 32),
+                  ),
                 ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text('Time created'),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text('Number of categories'),
-                ),
-              ),
-              DataColumn(
-                  label: Expanded(
-                child: Text('Option'),
-              )),
+              )
             ],
-            rows: listJob.length == 0
-                ? [RowEmpty()]
-                : listJob
-                    .map((e) => DataRow(cells: [
-                          DataCell(Text(e.name ?? "")),
-                          DataCell(Text(e.time_created.toString())),
-                          DataCell(Text(e.number_categories.toString())),
-                          DataCell(Row(
-                            children: [
-                              Spacer(),
-                              Icon(Icons.edit_outlined,
-                                  color:
-                                      ColorController().getColor().colorText),
-                              // (e.number_categories ?? 0) > 0 ?
-                              InkWell(
-                                child: Icon(Icons.navigate_next_rounded,
-                                    color:
-                                        ColorController().getColor().colorText),
-                                onTap: () {
-                                  setState(() {
-                                    listCategories = e.categories ?? [];
-                                    selectTable = 1;
-                                  });
-                                },
-                              )
-                              // : SizedBox(),
-                            ],
-                          ))
-                        ]))
-                    .toList(),
           ),
-        )
-      ],
-    );
+          SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                  dataTextStyle: StyleTable().textStyleTableContent(),
+                  headingTextStyle: StyleTable().textStyleTableHeader(),
+                  columns: const <DataColumn>[
+                    DataColumn(label: Text('Job name')),
+                    DataColumn(label: Text('Time created')),
+                    DataColumn(label: Text('Number of categories')),
+                    DataColumn(label: Text('Option'))
+                  ],
+                  rows: listJob.isEmpty
+                      ? [StyleTable().RowEmpty()]
+                      : listJob
+                          .map((e) => DataRow(cells: [
+                                DataCell(Text(e.name ?? "")),
+                                DataCell(Text(e.time_created.toString())),
+                                DataCell(Text(e.number_categories.toString())),
+                                DataCell(Row(children: [
+                                  Icon(Icons.edit_outlined,
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText),
+                                  Icon(Icons.highlight_off_rounded,
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText),
+                                  InkWell(
+                                      child: Icon(Icons.navigate_next_rounded,
+                                          color: ColorController()
+                                              .getColor()
+                                              .colorText),
+                                      onTap: () {
+                                        setState(() {
+                                          listCategories = e.categories ?? [];
+                                          QuizzesController.jobId = e.id ?? "";
+                                          QuizzesController.selected = 1;
+                                          selectTable = 1;
+                                        });
+                                      })
+                                ]))
+                              ]))
+                          .toList()))
+        ]);
   }
 
-  DataRow RowEmpty() {
-    return DataRow(cells: [
-      DataCell(Text("Empty")),
-      DataCell(Text("")),
-      DataCell(Text("")),
-      DataCell(Text("")),
-    ]);
-  }
-
-  TextStyle textStyleTableHeader() => TextStyle(
-      color: ColorController().getColor().colorText,
-      fontFamily: "Manrope-ExtraBold",
-      fontSize: 20,
-      fontWeight: FontWeight.w100);
-  TextStyle textStyleTableContent() => TextStyle(
-      color: ColorController().getColor().colorText,
-      fontFamily: "Manrope",
-      fontSize: 16,
-      fontWeight: FontWeight.w100);
-  TextStyle textStyleHeader() => TextStyle(
-      color: ColorController().getColor().colorText,
-      fontFamily: "Manrope-ExtraBold",
-      decoration: TextDecoration.none,
-      fontSize: 24,
-      fontWeight: FontWeight.w100);
-}
-
-class TableController {
-  static List<Job> listjob = [];
-  void LoadData() {
-    listjob = OverviewQuiz.listJob;
+  void _settingModalBottomSheet(context) {
+    double padding = (MediaQuery.of(context).size.width - 500) > 0
+        ? (MediaQuery.of(context).size.width - 500)
+        : 0;
+    showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext bc) {
+          return CustomBoxInfomation(
+            padding: padding,
+          );
+        });
   }
 }

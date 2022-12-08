@@ -10,7 +10,6 @@ class ExperiencePost {
   List<String>? liked_users;
   int? number_of_view;
 
-
   factory ExperiencePost.test() {
     var idPost = 'id_post';
     var likes = ['bakakAcsaCB'];
@@ -30,17 +29,16 @@ class ExperiencePost {
     );
   }
 
-
   ExperiencePost(this.post_id, this.topic_id, this.title, this.created_at,
-      this.content, this.liked_users,  this.number_of_view);
+      this.content, this.liked_users, this.number_of_view);
   ExperiencePost.only(
       {this.post_id,
-        this.topic_id,
-        this.title,
-        this.created_at,
-        this.content,
-        this.liked_users,
-        this.number_of_view});
+      this.topic_id,
+      this.title,
+      this.created_at,
+      this.content,
+      this.liked_users,
+      this.number_of_view});
 
   void setPostId(String? id) {
     this.post_id = id;
@@ -63,7 +61,6 @@ class ExperiencePost {
         ? List.from(data?['liked_users'])
         : null;
 
-
     final int? number_of_view = data?['number_of_view'];
     final String? author_id = data?['author_id'];
 
@@ -84,14 +81,14 @@ class ExperiencePost {
   }
 
   Map<String, dynamic> toJson() => {
-    if (post_id != null) 'post_id': post_id,
-    if (topic_id != null) 'topic_id': topic_id,
-    if (title != null) 'title': title,
-    if (created_at != null) 'created_at': created_at,
-    if (content != null) 'content': content,
-    if (liked_users != null) 'liked_users': liked_users,
-    if (number_of_view != null) 'number_of_view': number_of_view,
-  };
+        if (post_id != null) 'post_id': post_id,
+        if (topic_id != null) 'topic_id': topic_id,
+        if (title != null) 'title': title,
+        if (created_at != null) 'created_at': created_at,
+        if (content != null) 'content': content,
+        if (liked_users != null) 'liked_users': liked_users,
+        if (number_of_view != null) 'number_of_view': number_of_view,
+      };
 
   void addLikedUser(String userId) {
     if (liked_users == null) {

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
 class Job {
   String? id;
@@ -74,14 +74,14 @@ class SetOfQuiz {
   String? name;
   DateTime? time_created;
   int? number_question;
-  // List<Quiz>? listquiz;
+  List<Quiz>? listquiz;
 
   SetOfQuiz({
     this.id,
     this.name,
     this.time_created,
     this.number_question,
-    // this.listquiz,
+    this.listquiz,
   });
 
   factory SetOfQuiz.fromJson(Map<String, dynamic>? data, String dataid) {
@@ -90,5 +90,43 @@ class SetOfQuiz {
     final DateTime time_created = (data?['time_created'] as Timestamp).toDate();
     return SetOfQuiz(
         id: id, name: name, time_created: time_created, number_question: 0);
+  }
+}
+
+class Quiz {
+  String? id;
+  String? name;
+  String? description;
+  List<QuestionQuiz>? listQuestion;
+
+  Quiz({this.id, this.name, this.description, this.listQuestion});
+}
+
+class QuestionQuiz {
+  String? id;
+  String? content;
+  List<Answer> listAnswer;
+  int? correctAnswer;
+
+  QuestionQuiz(
+      {this.id, this.content, required this.listAnswer, this.correctAnswer});
+
+  factory QuestionQuiz.fromJson(Map<String, dynamic>? data, String dataId) {
+    final String content = data?['content'];
+    return QuestionQuiz(
+        content: content, id: dataId, listAnswer: [], correctAnswer: -1);
+  }
+}
+
+class Answer {
+  String? content;
+  bool? correct;
+
+  Answer({this.content, this.correct});
+
+  factory Answer.fromJson(Map<String, dynamic>? data) {
+    final String content = data?['content'];
+    final bool correct = data?['correct'];
+    return Answer(content: content, correct: correct);
   }
 }

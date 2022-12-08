@@ -1,5 +1,7 @@
 import 'package:admin_ipa/controller/color_theme_controller.dart';
+import 'package:admin_ipa/screens/quizzes/component/custom_sidebar_quiz.dart';
 import 'package:admin_ipa/screens/quizzes/component/overview.dart';
+import 'package:admin_ipa/screens/quizzes/controller/quizzes_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +10,7 @@ import '../../services/quizzes_services.dart';
 import 'component/custom_information.dart';
 
 class QuizScreen extends StatelessWidget {
-  const QuizScreen({Key? key, required this.size}) : super(key: key);
+  QuizScreen({Key? key, required this.size}) : super(key: key);
   final Size size;
 
   Future<List<Job>> loadDataQuiz() async {
@@ -47,6 +49,8 @@ class QuizScreen extends StatelessWidget {
               .collection('question');
           AggregateQuerySnapshot query = await collectionQuestion.count().get();
           numberQuestion += query.count;
+          result[i].getCategories()[j].getSetOfQuiz()[k].number_question =
+              query.count;
         }
       }
     }
@@ -63,33 +67,38 @@ class QuizScreen extends StatelessWidget {
     return FutureBuilder(
         future: loadDataQuiz(),
         builder: (context, snapshot) {
-          return Container(
-            height: size.height,
-            width: size.width,
-            // color: Colors.red,
-            margin: EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Overview",
-                      style: TextStyle(
-                          color: ColorController().getColor().colorText,
-                          fontFamily: "Manrope-ExtraBold",
-                          decoration: TextDecoration.none,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w100),
-                    ),
-                    Overview(width: size.width - 40),
-                    Container(
-                      width: size.width,
-                      padding: EdgeInsets.all(10),
-                      child: CustomTable(),
-                    ),
-                  ]),
-            ),
-          );
+          return Scaffold(
+              key: QuizzesController.key,
+              endDrawer: CustomSideBarQuiz(),
+              body: buildItem());
         });
+  }
+
+  Container buildItem() {
+    return Container(
+      height: size.height,
+      width: size.width,
+      color: ColorController().getColor().colorBody,
+      padding: EdgeInsets.all(20),
+      child: SingleChildScrollView(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            "Overview",
+            style: TextStyle(
+                color: ColorController().getColor().colorText,
+                fontFamily: "Manrope-ExtraBold",
+                decoration: TextDecoration.none,
+                fontSize: 24,
+                fontWeight: FontWeight.w100),
+          ),
+          Overview(width: size.width - 40),
+          Container(
+            width: size.width,
+            padding: EdgeInsets.all(10),
+            child: CustomTable(),
+          ),
+        ]),
+      ),
+    );
   }
 }
