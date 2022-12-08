@@ -67,6 +67,18 @@ mixin ArticlePostHandle {
     return result;
   }
 
+  Future deleteArticle(String articlePostId) async {
+    if (articlePostId == null) {
+      print('Failed to delete an article');
+      return;
+    }
+    print('$articlePostId');
+    DocumentReference doc = _db.collection('articles').doc('$articlePostId');
+    return doc
+        .delete()
+        .then((value) => print('Delete an article successfully'))
+        .catchError((error) => print('Failed to delete an article'));
+  }
 
 
 }

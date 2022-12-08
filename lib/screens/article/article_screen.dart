@@ -69,7 +69,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ),
       IconButton(
           onPressed: () {
-
+            late ArticlePost articlePost;
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -120,7 +120,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
-                            ArticlePost articlePost =
+                             articlePost =
                                 ArticlePost(
                                   null,
                                   titleController.text,
@@ -137,22 +137,20 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             // ExperiencePost.fromJson(
                             //     jsonDecode(jsonEncode(experiencePost)));
                             DatabaseService().addArticle(articlePost);
-                            
                             Navigator.pop(context);
                           })
                     ],
                   );
                 });
+            setState(() {
+              print('hehehe');
+            });
           },
           icon: Icon(
             Icons.add,
             color: ColorController().getColor().colorText,
           ))
     ]);
-  }
-
-  void removeArtice() {
-    //dosomething
   }
 
   TextStyle textStyleTableHeader() => TextStyle(
@@ -253,7 +251,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             style: textStyleTableContent(),
                           )),
                           DataCell(IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                setState(() {
+                                  DataArticle.deletePost(article.id!);
+                                  DatabaseService()
+                                      .deleteArticle(article.id!);
+                                });
+                              },
                               icon: Icon(
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
