@@ -280,7 +280,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               ),
               DataColumn(
                 label: Expanded(
-                  child: Text('Apporve', style: textStyleTableHeader()),
+                  child: Text('Approve', style: textStyleTableHeader()),
                 ),
               )
             ],
@@ -315,8 +315,11 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                           DataCell(post.isApproved!
                               ? Text('')
                               : IconButton(
-                                  onPressed: () async{
+                                  onPressed: () {
+                                    setState(() {
                                       DatabaseService().acceptExperiencePost(post.post_id??'Error',post.isApproved ?? false);
+                                      DataExperience.updateList(post.post_id!);
+                                    });
                                   },
                                   icon: Icon(
                                     CupertinoIcons.check_mark,
