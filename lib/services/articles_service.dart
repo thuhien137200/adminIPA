@@ -17,6 +17,29 @@ mixin ArticlePostHandle {
     }).toList();
   }
 
+   void modifyContentArticle(String articleId, String newContent){
+    _db.collection('articles').doc(articleId).update({
+        "content": newContent,
+      });
+      print('Modify content success');
+  }
+
+
+    void modifyTitleAndContentArticle(String articleId, String newTitle, String newContent){
+    _db.collection('articles').doc(articleId).update({
+        "title": newTitle,
+        "content": newContent
+      });
+      print('Modify title success');
+  }
+
+    void modifyCategoriesArticle(String articleId, String newContent){
+    _db.collection('articles').doc(articleId).update({
+        "categories": newContent,
+      });
+      print('Modify success');
+  }
+
   Stream<List<ArticlePost>?> get allArticles {
     return _db
         .collection('articles')
@@ -27,6 +50,8 @@ mixin ArticlePostHandle {
   Future<List<ArticlePost>?> get allArticlesOnce {
     return _db.collection('articles').get().then(_articlesFromQuerySnapshot);
   }
+
+  
 
   void addArticle(ArticlePost article) async {
     DocumentReference doc = _db.collection('articles').doc();

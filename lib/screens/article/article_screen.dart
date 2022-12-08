@@ -280,7 +280,103 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                  onPressed: () {},
+                            // Sua
+                  onPressed: () {
+                      showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  String content = "";
+                  var titleController = TextEditingController();
+                  var contentController = TextEditingController();
+                  titleController.text=article.title ?? 'Null';
+                  contentController.text=article.content ?? 'Null';
+
+                  return AlertDialog(
+                    scrollable: true,
+                    title: Text(
+                      'Add an Article',
+                      style: AppFonts.headStyle,
+                    ),
+                    content: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Form(
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Title',
+                                    style: AppFonts.title,
+                                  ),
+                                ]),
+                            Container(
+                              width: 500,
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  
+                                  fillColor: Colors.lightBlue[100],
+                                  //icon: Icon(Icons.account_box),
+                                ),
+                                style: AppFonts.content,
+                                controller: titleController,
+                              ),
+                            ),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Content',
+                                    style: AppFonts.title,
+                                  ),
+                                ]),
+                            Container(
+                              padding: EdgeInsets.only(top: 16),
+                              height: 10 * 24.0,
+                              child: TextField(
+                                controller: contentController,
+                                maxLines: 10,
+                                style: AppFonts.content,
+                                decoration: InputDecoration(
+                                  fillColor: Colors.lightBlue[100],
+                                  filled: true,
+                                ),
+                                onChanged: (value) {
+                                  content = value;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      TextButton(
+                          child: Text("Submit"),
+                          onPressed: () {
+                            // ArticlePost articlePost = ArticlePost(
+                            //   null,
+                            //   titleController.text,
+                            //   DateTime.now(),
+                            //   contentController.text,
+                            //   null,
+                            //   'JOcWUTwArybiZjO9CelOhvBApCT2',
+                            //   null,
+                            // );
+                            // print(articlePost.toString());
+                            DatabaseService().modifyTitleAndContentArticle(article.id ?? 'null',titleController.text,contentController.text);
+
+                            Navigator.pop(context);
+                          })
+                    ],
+                  );
+                });
+                  },
                   icon: Icon(
                     CupertinoIcons.pen,
                     color: ColorController().getColor().colorText,
