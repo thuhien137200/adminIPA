@@ -22,22 +22,22 @@ class ExperienceScreen extends StatefulWidget {
 
 class _ExperienceScreenState extends State<ExperienceScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  var topicController= TextEditingController();
+  var topicController = TextEditingController();
   late Future<List<ExperiencePost>?> _dataFuture;
   final _formKey = GlobalKey<FormState>();
   late Future<List<Topic>?> _topicFuture;
-   String topicId ='';
+  String topicId = '';
 
   List<ExperiencePost>? _experienceFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    List<ExperiencePost>? res= querySnapshot.docs
+    List<ExperiencePost>? res = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ExperiencePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ExperiencePost.test();
     }).toList();
-    DataExperience.dataExperience=res??[];
+    DataExperience.dataExperience = res ?? [];
     return res;
   }
 
@@ -80,16 +80,15 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
         color: Color.fromARGB(255, 105, 179, 240),
       ),
       child: InkWell(
-        onTap: (){
-          setState(() {
-            topicController.text=(topic.topic_name??'Null') ;
-            //topicName=topic.topic_name??'Null';
-            topicId=topic.idTopic;
-            print(topicId);
-          });
-        },
-        child: Text(topic.topic_name ?? 'null')
-        ),
+          onTap: () {
+            setState(() {
+              topicController.text = (topic.topic_name ?? 'Null');
+              //topicName=topic.topic_name??'Null';
+              topicId = topic.idTopic;
+              print(topicId);
+            });
+          },
+          child: Text(topic.topic_name ?? 'null')),
     );
   }
 
@@ -127,7 +126,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                   String content = "";
                   var titleController = TextEditingController();
                   var contentController = TextEditingController();
-                  
+
                   return AlertDialog(
                     scrollable: true,
                     title: Text('Add Experience Post'),
@@ -141,15 +140,13 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 ...(topics!.map((e) => topicSelection(e))),
                               ],
                             ),
-
                             TextFormField(
-                               decoration: InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Topic',
                                 //icon: Icon(Icons.account_box),
                               ),
                               controller: topicController,
                             ),
-
                             TextFormField(
                               decoration: InputDecoration(
                                 labelText: 'Title',
@@ -184,25 +181,23 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
-                            ExperiencePost experiencePost =
-                                ExperiencePost(
-                                  null,
-                                  topicId,
-                                  titleController.text,
-                                  DateTime.now(),
-                                  contentController.text,
-                                  null,
-                                  null,
-                                  false
-                                );
-                                print(experiencePost.toString());
+                            ExperiencePost experiencePost = ExperiencePost(
+                                null,
+                                topicId,
+                                titleController.text,
+                                DateTime.now(),
+                                contentController.text,
+                                null,
+                                null,
+                                false);
+                            print(experiencePost.toString());
                             // experiencePost.setContent(contentController.text);
                             // experiencePost.setTitle(titleController.text);
                             // experiencePost.setCreated_at(DateTime.now());
                             // ExperiencePost.fromJson(
                             //     jsonDecode(jsonEncode(experiencePost)));
                             DatabaseService().addExperiencePost(experiencePost);
-                            
+
                             Navigator.pop(context);
                           })
                     ],
@@ -275,25 +270,17 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               ),
               DataColumn(
                 label: Expanded(
-                  child: Text(
-                    'Delete', style: textStyleTableHeader()
-                  ),
+                  child: Text('Delete', style: textStyleTableHeader()),
                 ),
               ),
               DataColumn(
                 label: Expanded(
-                  child: Text(
-                    'Edit',
-                      style: textStyleTableHeader()
-                  ),
+                  child: Text('Edit', style: textStyleTableHeader()),
                 ),
               ),
               DataColumn(
                 label: Expanded(
-                  child: Text(
-                    'Apporve',
-                      style: textStyleTableHeader()
-                  ),
+                  child: Text('Apporve', style: textStyleTableHeader()),
                 ),
               )
             ],
@@ -320,20 +307,22 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    CupertinoIcons.pen,
-                    color: ColorController().getColor().colorText,
-                  ))),
-
-                          DataCell(
-                              post.isApproved!?Text(''):
-                              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    CupertinoIcons.check_mark,
-                    color: ColorController().getColor().colorText,
-                  ))),
+                              onPressed: () {},
+                              icon: Icon(
+                                CupertinoIcons.pen,
+                                color: ColorController().getColor().colorText,
+                              ))),
+                          DataCell(post.isApproved!
+                              ? Text('')
+                              : IconButton(
+                                  onPressed: () async{
+                                      DatabaseService().acceptExperiencePost(post.post_id??'Error',post.isApproved ?? false);
+                                  },
+                                  icon: Icon(
+                                    CupertinoIcons.check_mark,
+                                    color:
+                                        ColorController().getColor().colorText,
+                                  ))),
                         ]))
                     .toList(),
           ),

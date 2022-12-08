@@ -161,6 +161,9 @@ class ExperiencePost {
     this.content = content;
   }
 
+  void setAccept(bool? approved){
+    this.isApproved=approved;
+  }
   // void setComments(List<Comment>? comments) => this.comments = comments;
 
   // int get numberOfComments {
@@ -249,7 +252,7 @@ class ExperiencePost {
 
   @override
   String toString() {
-    return '${this.topic_id} , ${this.title}  , ${this.content} ,Crate: ${this.created_at.toString()}';
+    return '${this.topic_id} , ${this.title}  , ${this.content} ,Crate: ${this.created_at.toString()} , Approve: ${this.isApproved}';
   }
 
   // static List<ExperiencePost> getSampleExperiencePostList() {

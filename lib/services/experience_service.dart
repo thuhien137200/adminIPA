@@ -28,6 +28,21 @@ mixin ExperienceService{
     return _db.collection('experience').get().then(_experienceFromQuerySnapshot);
   }
 
+  void acceptExperiencePost(String experiencePostId, bool isApproved){
+     
+      _db.collection('experience').doc(experiencePostId).update({
+        "isApproved": !isApproved,
+      });
+     print('Modify Successful');
+  }
+
+  void modifyContent(String experiencePostId, String newContent){
+    _db.collection('experience').doc(experiencePostId).update({
+        "content": newContent,
+      });
+      print('update success');
+  }
+
   void addExperiencePost(ExperiencePost experiencePost) async {
     DocumentReference doc = _db.collection('experience').doc();
     String doc_id = doc.id;
