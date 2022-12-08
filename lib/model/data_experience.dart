@@ -116,6 +116,7 @@ class ExperiencePost {
   List<String>? liked_users;
 //  List<Comment>? comments;
   int? number_of_view;
+  bool? isApproved;
 
   ExperiencePost(
     this.post_id,
@@ -126,6 +127,7 @@ class ExperiencePost {
     this.liked_users,
 //    this.comments,
     this.number_of_view,
+    this.isApproved
   );
   ExperiencePost.only({
     this.post_id,
@@ -136,6 +138,7 @@ class ExperiencePost {
     this.liked_users,
     // this.comments,
     this.number_of_view,
+    this.isApproved
   });
 
   void setCreated_at(DateTime? date) {
@@ -176,6 +179,7 @@ class ExperiencePost {
     var created_at = DateTime.now();
     var title = 'This is a test experience';
     var number_of_view = 10;
+    var isApproved=true;
     return ExperiencePost.only(
       post_id: idPost,
       topic_id: idTopic,
@@ -184,6 +188,7 @@ class ExperiencePost {
       created_at: created_at,
       liked_users: likes,
       number_of_view: number_of_view,
+      isApproved: isApproved
     );
   }
 
@@ -201,9 +206,9 @@ class ExperiencePost {
         : null;
 
     final int? number_of_view = data?['number_of_view'];
-
+    final bool? isApproved=data?['isApproved'];
     return ExperiencePost(post_id, topic_id, title, created_at, content,
-        liked_users, number_of_view);
+        liked_users, number_of_view,isApproved);
   }
 
   factory ExperiencePost.fromDocumentSnapshot(
@@ -220,6 +225,7 @@ class ExperiencePost {
         if (liked_users != null) 'liked_users': liked_users,
         // if (comments != null) 'comments': comments,
         if (number_of_view != null) 'number_of_view': number_of_view,
+        if(isApproved!=null) 'isApproved':isApproved,
       };
 
   void addLikedUser(String userId) {

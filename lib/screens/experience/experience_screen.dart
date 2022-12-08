@@ -68,6 +68,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
+      DataCell(Text("")),
     ]);
   }
 
@@ -192,6 +193,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                   contentController.text,
                                   null,
                                   null,
+                                  false
                                 );
                                 print(experiencePost.toString());
                             // experiencePost.setContent(contentController.text);
@@ -274,14 +276,23 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    '',
+                    'Delete', style: textStyleTableHeader()
                   ),
                 ),
               ),
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    '',
+                    'Edit',
+                      style: textStyleTableHeader()
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Apporve',
+                      style: textStyleTableHeader()
                   ),
                 ),
               )
@@ -314,82 +325,20 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                     CupertinoIcons.pen,
                     color: ColorController().getColor().colorText,
                   ))),
+
+                          DataCell(
+                              post.isApproved!?Text(''):
+                              IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    CupertinoIcons.check_mark,
+                    color: ColorController().getColor().colorText,
+                  ))),
                         ]))
                     .toList(),
           ),
         );
       },
-    );
-
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: DataTable(
-        columns: <DataColumn>[
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'ID',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Title',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Created at',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                '',
-              ),
-            ),
-          ),
-        ],
-        rows: <DataRow>[
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('1')),
-              DataCell(Text('How to be handsome?')),
-              DataCell(Text('02/12/2022')),
-              DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('2')),
-              DataCell(Text('How to improve English skills')),
-              DataCell(Text('01/12/2022')),
-              DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('3')),
-              DataCell(Text('Is English important for developers?')),
-              DataCell(Text('25/11/2022')),
-              DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
