@@ -1,4 +1,5 @@
 import 'package:admin_ipa/model/data_company.dart';
+import 'package:admin_ipa/screens/company/data_company.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,13 +21,15 @@ class _CompanyScreenState extends State<CompanyScreen> {
 
   List<Company>? _companiesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<Company>? res= querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return Company.fromDocumentSnapshot(documentSnapshot);
       }
       return Company.test();
     }).toList();
+    DataCompany.companyData=res??[];
+    return res;
   }
 
   Row HeaderCompany() {
@@ -97,7 +100,6 @@ class _CompanyScreenState extends State<CompanyScreen> {
     return FutureBuilder(
       future: _dataFuture,
       builder: (BuildContext context, AsyncSnapshot<List<Company>?> snapshot) {
-        List<Company>? companies = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -152,9 +154,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
                 ),
               ),
             ],
-            rows: companies == null
+            rows: DataCompany.companyData == null
                 ? [RowEmpty()]
-                : companies!
+                : DataCompany.companyData!
                     .map((company) => DataRow(cells: [
                           DataCell(Text(
                             company.id!,

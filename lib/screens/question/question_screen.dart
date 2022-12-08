@@ -1,4 +1,5 @@
 import 'package:admin_ipa/model/data_question.dart';
+import 'package:admin_ipa/screens/question/data_question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
       }
       return Question.test();
     }).toList();
+
+    DataQuestion.dataQuestion=res??[];
     return res;
   }
 
@@ -102,7 +105,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
     return FutureBuilder(
       future: _dataFuture,
       builder: (BuildContext context, AsyncSnapshot<List<Question>?> snapshot) {
-        List<Question>? questions = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -150,9 +152,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 ),
               ),
             ],
-            rows: questions == null
+            rows: DataQuestion.dataQuestion == null
                 ? [RowEmpty()]
-                : questions!
+                : DataQuestion.dataQuestion
                     .map((question) => DataRow(cells: [
                           DataCell(Text(question.id!,
                               style: textStyleTableContent())),

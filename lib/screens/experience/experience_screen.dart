@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:admin_ipa/screens/experience/DataExperience.dart';
 import 'package:admin_ipa/services/database_service.dart';
 import 'package:admin_ipa/services/experience_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,13 +30,15 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
 
   List<ExperiencePost>? _experienceFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<ExperiencePost>? res= querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ExperiencePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ExperiencePost.test();
     }).toList();
+    DataExperience.dataExperience=res??[];
+    return res;
   }
 
   @override
@@ -229,7 +232,6 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       future: _dataFuture,
       builder: (BuildContext context,
           AsyncSnapshot<List<ExperiencePost>?> snapshot) {
-        List<ExperiencePost>? topics = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -284,9 +286,9 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                 ),
               )
             ],
-            rows: topics == null
+            rows: DataExperience.dataExperience == null
                 ? [RowEmpty()]
-                : topics
+                : DataExperience.dataExperience
                     .map((post) => DataRow(cells: [
                           DataCell(Text(
                             post.topic_id!,

@@ -1,3 +1,4 @@
+import 'package:admin_ipa/screens/topic/TopicData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,13 +21,15 @@ class _TopicScreenState extends State<TopicScreen> {
 
   List<Topic>? _topicsFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<Topic>? res= querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return Topic.fromDocumentSnapshot(documentSnapshot);
       }
       return Topic.test();
     }).toList();
+    TopicData.topicData=res??[];
+    return res;
   }
 
   Row HeaderTopic() {
@@ -90,7 +93,6 @@ class _TopicScreenState extends State<TopicScreen> {
     return FutureBuilder(
       future: _dataFuture,
       builder: (BuildContext context, AsyncSnapshot<List<Topic>?> snapshot) {
-        List<Topic>? topics = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -137,9 +139,9 @@ class _TopicScreenState extends State<TopicScreen> {
                 ),
               ),
             ],
-            rows: topics == null
+            rows: TopicData.topicData == null
                 ? [RowEmpty()]
-                : topics!
+                : TopicData.topicData
                     .map((topic) => DataRow(cells: [
                           DataCell(Text(
                             topic.topic_id!,

@@ -1,3 +1,4 @@
+import 'package:admin_ipa/screens/article/data_article.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,13 +32,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
   List<ArticlePost>? _articlesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<ArticlePost>? result= querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ArticlePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ArticlePost.test();
     }).toList();
+    DataArticle.dataArticle=result?? [];
+    return result;
   }
 
   Row HeaderArticle() {
@@ -179,7 +182,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
       future: _dataFuture,
       builder:
           (BuildContext context, AsyncSnapshot<List<ArticlePost>?> snapshot) {
-        List<ArticlePost>? articles = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -234,9 +236,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 ),
               ),
             ],
-            rows: articles == null
+            rows: DataArticle.dataArticle == null
                 ? [RowEmpty()]
-                : articles
+                : DataArticle.dataArticle
                     .map((article) => DataRow(cells: [
                           DataCell(Text(
                             article.id!,
