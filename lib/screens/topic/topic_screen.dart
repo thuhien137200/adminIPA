@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../config/size_config.dart';
 import '../../controller/color_theme_controller.dart';
 import '../../model/data_topic.dart';
+import '../../services/database_service.dart';
 import '../../style/style.dart';
 
 class TopicScreen extends StatefulWidget {
@@ -21,14 +22,14 @@ class _TopicScreenState extends State<TopicScreen> {
 
   List<Topic>? _topicsFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    List<Topic>? res= querySnapshot.docs
+    List<Topic>? res = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return Topic.fromDocumentSnapshot(documentSnapshot);
       }
       return Topic.test();
     }).toList();
-    TopicData.topicData=res??[];
+    TopicData.topicData = res ?? [];
     return res;
   }
 
@@ -152,17 +153,125 @@ class _TopicScreenState extends State<TopicScreen> {
                             style: textStyleTableContent(),
                           )),
                           DataCell(IconButton(
-                              onPressed: () {},
+                              //Delete function
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Delete Topic Post',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: const [
+                                                  Icon(Icons.warning),
+                                                  SizedBox(width: 12),
+                                                  Text(
+                                                      'Are you sure you want to delete?'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text("No"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: const Text("Yes"),
+                                              onPressed: () {
+                                                DatabaseService().deletePost(
+                                                    topic.topic_id ?? 'null');
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
                               icon: Icon(
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    CupertinoIcons.pen,
-                    color: ColorController().getColor().colorText,
-                  ))),
+                              // Modify function
+                              onPressed: () {
+                                var topicController = TextEditingController();
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      String content = "";
+                                      var topicNameController =
+                                          TextEditingController();
+                                      topicNameController.text =
+                                          topic.topic_name ?? 'Null';
+
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Modify Experience Post',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Column(
+                                              children: <Widget>[
+                                                Container(
+                                                  width: 500,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 16),
+                                                  child: TextFormField(     
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                      //icon: Icon(Icons.account_box),
+                                                    ),
+                                                    style: AppFonts.content,
+                                                    controller:
+                                                        topicNameController,
+                                                  ),
+                                                ),
+                                                
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text("Cancel"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: Text("Submit"),
+                                              onPressed: () {
+                                                DatabaseService().modifyTopic(
+                                                    topic.topic_id ?? 'null',
+                                                    topicNameController.text);
+
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
+                              icon: Icon(
+                                CupertinoIcons.pen,
+                                color: ColorController().getColor().colorText,
+                              ))),
                         ]))
                     .toList(),
           ),

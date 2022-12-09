@@ -62,5 +62,14 @@ mixin QAService {
         .map((snapshot) => snapshot.docs.length);
   }
 
+   void deleteQA(String? idQa) async {
+    try {
+      await _db.collection('questions').doc(idQa).delete();
+    } catch (e) {
+      print('Delete fails');
+      return;
+    }
+}
+
 
 }

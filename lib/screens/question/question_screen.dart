@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
 import '../../controller/color_theme_controller.dart';
+import '../../services/database_service.dart';
 import '../../style/style.dart';
 
 class QuestionScreen extends StatefulWidget {
@@ -40,7 +41,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
       return Question.test();
     }).toList();
 
-    DataQuestion.dataQuestion=res??[];
+    DataQuestion.dataQuestion = res ?? [];
     return res;
   }
 
@@ -163,7 +164,53 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           DataCell(Text(question.created_at.toString(),
                               style: textStyleTableContent())),
                           DataCell(IconButton(
-                              onPressed: () {},
+                              //Delete
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Delete QA Post',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: const [
+                                                  Icon(Icons.warning),
+                                                  SizedBox(width: 12),
+                                                  Text(
+                                                      'Are you sure you want to delete?'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text("No"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: const Text("Yes"),
+                                              onPressed: () {
+                                                DatabaseService().deleteQA(
+                                                    question.id ?? 'null');
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
                               icon: Icon(
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
