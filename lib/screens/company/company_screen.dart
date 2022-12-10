@@ -1,5 +1,6 @@
 import 'package:admin_ipa/model/data_company.dart';
 import 'package:admin_ipa/screens/company/data_company.dart';
+import 'package:admin_ipa/services/database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +22,14 @@ class _CompanyScreenState extends State<CompanyScreen> {
 
   List<Company>? _companiesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    List<Company>? res= querySnapshot.docs
+    List<Company>? res = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return Company.fromDocumentSnapshot(documentSnapshot);
       }
       return Company.test();
     }).toList();
-    DataCompany.companyData=res??[];
+    DataCompany.companyData = res ?? [];
     return res;
   }
 
@@ -57,7 +58,92 @@ class _CompanyScreenState extends State<CompanyScreen> {
         flex: 1,
       ),
       IconButton(
-          onPressed: () {},
+          onPressed: () {
+            late Company company;
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  String name = "";
+                  String logoUrl = "";
+                  var nameController = TextEditingController();
+                  var logoUrlController = TextEditingController();
+
+                  return AlertDialog(
+                    scrollable: true,
+                    title: Text(
+                      'Add new Company',
+                      style: AppFonts.headStyle,
+                    ),
+                    content: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Form(
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Name',
+                                    style: AppFonts.title,
+                                  ),
+                                ]),
+                            Container(
+                              width: 500,
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  fillColor: Colors.lightBlue[100],
+                                  //icon: Icon(Icons.account_box),
+                                ),
+                                style: AppFonts.content,
+                                controller: nameController,
+                              ),
+                            ),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Logo Url',
+                                    style: AppFonts.title,
+                                  ),
+                                ]),
+                            Container(
+                              width: 500,
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  fillColor: Colors.lightBlue[100],
+                                  //icon: Icon(Icons.account_box),
+                                ),
+                                style: AppFonts.content,
+                                controller: logoUrlController,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      TextButton(
+                          child: Text("Submit"),
+                          onPressed: () {
+                            Company company = Company(
+                              null,
+                              nameController.text,
+                              logoUrlController.text,
+                            );
+                            DatabaseService().addCompany(company);
+
+                            Navigator.pop(context);
+                          })
+                    ],
+                  );
+                });
+          },
           icon: Icon(Icons.add, color: ColorController().getColor().colorText))
     ]);
   }
@@ -182,17 +268,148 @@ class _CompanyScreenState extends State<CompanyScreen> {
                             )),
                           )),
                           DataCell(IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                setState(() {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          scrollable: true,
+                                          title: Text(
+                                            'Notice',
+                                            style: AppFonts.headStyle,
+                                          ),
+                                          content: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Are you sure you want to delete this Company ?',
+                                                  style: AppFonts.title,
+                                                ),
+                                              ]),
+                                          actions: [
+                                            TextButton(
+                                              child: Text("No"),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                            ),
+                                            TextButton(
+                                                child: Text("Yes"),
+                                                onPressed: () {
+                                                  DatabaseService()
+                                                      .deleteCompany(
+                                                          company.id!);
+                                                  Navigator.pop(context);
+                                                })
+                                          ],
+                                        );
+                                      });
+                                });
+                              },
                               icon: Icon(
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    CupertinoIcons.pen,
-                    color: ColorController().getColor().colorText,
-                  ))),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      String content = "";
+                                      var nameController =
+                                          TextEditingController();
+                                      var logoUrlController =
+                                          TextEditingController();
+                                      nameController.text =
+                                          company.name ?? 'Null';
+                                      logoUrlController.text =
+                                          company.logoUrl ?? 'Null';
+
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Edit information',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Column(
+                                              children: <Widget>[
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Name',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  width: 500,
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 16),
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                    ),
+                                                    style: AppFonts.content,
+                                                    controller: nameController,
+                                                  ),
+                                                ),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Logo Url',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  width: 500,
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 16),
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                    ),
+                                                    style: AppFonts.content,
+                                                    controller:
+                                                        logoUrlController,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text("Cancel"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: Text("Submit"),
+                                              onPressed: () {
+                                                DatabaseService()
+                                                    .modifyCompanyInformation(
+                                                        company.id ?? 'null',
+                                                        nameController.text,
+                                                        logoUrlController.text);
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
+                              icon: Icon(
+                                CupertinoIcons.pen,
+                                color: ColorController().getColor().colorText,
+                              ))),
                         ]))
                     .toList(),
           ),

@@ -20,5 +20,37 @@ mixin CompanyService {
     return _db.collection('companies').get().then(_companiesFromQuerySnapshot);
   }
 
+  void addCompany(Company company) async {
+    DocumentReference doc = _db.collection('companies').doc();
+    String doc_id = doc.id;
+    if (company.id == null) company.setId(doc_id);
+    company.setLogoUrl(company.logoUrl);
+    company.setName(company.name);
+    // Add article to firebase
+    doc
+        .set(company.toJson())
+        .then((value) => print('Add company successfully'))
+        .catchError((error) => print('Failed to add an company'));
+  }
 
+  Future deleteCompany(String companyId) async {
+    if (companyId == null) {
+      print('Failed to delete an article');
+      return;
+    }
+    DocumentReference doc = _db.collection('companies').doc(companyId);
+    return doc
+        .delete()
+        .then((value) => print('Delete the company successfully'))
+        .catchError((error) => print('Failed to delete the company'));
+  }
+
+  void modifyCompanyInformation(
+      String companyId, String newName, String newLogoUrl) {
+    _db
+        .collection('companies')
+        .doc(companyId)
+        .update({"name": newName, "logoUrl": newLogoUrl});
+    print('Modify company success');
+  }
 }

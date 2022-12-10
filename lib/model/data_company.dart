@@ -11,6 +11,10 @@ class Company {
     return id ?? '-1';
   }
 
+  void setId(String? id) => this.id = id;
+  void setName(String? name) => this.name = name;
+  void setLogoUrl(String? logoUrl) => this.logoUrl = logoUrl;
+
   factory Company.fromDocumentSnapshot(
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
     return Company.fromJson(documentSnapshot.data());
@@ -34,7 +38,6 @@ class Company {
     this.logoUrl,
   });
 
-
   factory Company.test() {
     var id = 'id_test';
     var name = 'no_name';
@@ -45,5 +48,9 @@ class Company {
       logoUrl: logoUrl,
     );
   }
-
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (name != null) 'name': name,
+        if (logoUrl != null) 'logoUrl': logoUrl,
+      };
 }
