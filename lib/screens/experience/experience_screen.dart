@@ -73,24 +73,29 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     ]);
   }
 
-  Container topicSelection(Topic topic, TextEditingController topicController) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: Color.fromARGB(255, 105, 179, 240),
-      ),
-      child: InkWell(
-          onTap: () {
-            setState(() {
-              topicController.text = (topic.topic_name ?? 'Null');
-              //topicName=topic.topic_name??'Null';
-              topicId = topic.idTopic;
-              topicIdController.text = topicId;
-              print(topicId);
-            });
-          },
-          child: Text(topic.topic_name ?? 'null')),
+  Row topicSelection(Topic topic, TextEditingController topicController) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: Color.fromARGB(255, 105, 179, 240),
+          ),
+          child: InkWell(
+              onTap: () {
+                setState(() {
+                  topicController.text = (topic.topic_name ?? 'Null');
+                  //topicName=topic.topic_name??'Null';
+                  topicId = topic.idTopic;
+                  topicIdController.text = topicId;
+                  print(topicId);
+                });
+              },
+              child: Text(topic.topic_name ?? 'null')),
+        ),
+        const SizedBox(width: 8,),
+      ],
     );
   }
 
@@ -381,7 +386,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                       return AlertDialog(
                                         scrollable: true,
                                         title: Text(
-                                          'Modify Experience Post',
+                                          'Modify Topic',
                                           style: AppFonts.headStyle,
                                         ),
                                         content: Padding(

@@ -58,7 +58,63 @@ class _TopicScreenState extends State<TopicScreen> {
         flex: 1,
       ),
       IconButton(
-          onPressed: () {},
+          onPressed: () {
+             showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  String content = "";
+                  var topicController = TextEditingController();
+                  return AlertDialog(
+                    scrollable: true,
+                    title: const Text('Add Topic'),
+                    content: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Form(
+                        child: Column(
+                          children: <Widget>[ 
+                            Container(
+                              height: 10 * 24.0,
+                              child: TextField(
+                                controller: topicController,
+                                maxLines: 10,
+                                decoration: InputDecoration(
+                                  hintText: "Content",
+                                  fillColor: Colors.lightBlue[100],
+                                  filled: true,
+                                ),
+                                onChanged: (value) {
+                                  content = value;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      TextButton(
+                          child: Text("Submit"),
+                          onPressed: () {
+                            if (topicController.text == '') {
+                              var snackBar = const SnackBar(
+                                  content: Text(
+                                      'Name does not allow null'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              return;
+                            }
+                            Topic topic = Topic(null,topicController.text);           
+                            DatabaseService().addTopic(topic);
+                            Navigator.pop(context);
+                          })
+                    ],
+                  );
+                });
+          },
           icon: Icon(
             Icons.add,
             color: ColorController().getColor().colorText,

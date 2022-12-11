@@ -32,14 +32,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
   List<ArticlePost>? _articlesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    List<ArticlePost>? result= querySnapshot.docs
+    List<ArticlePost>? result = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ArticlePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ArticlePost.test();
     }).toList();
-    DataArticle.dataArticle=result?? [];
+    DataArticle.dataArticle = result ?? [];
     return result;
   }
 
@@ -144,6 +144,16 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
+                            if (contentController.text == '' ||
+                                titleController.text == '') {
+                              var snackBar = const SnackBar(
+                                  content: Text(
+                                      'Title Or Content does not allow null'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              return;
+                            }
+
                             ArticlePost articlePost = ArticlePost(
                               null,
                               titleController.text,
@@ -161,7 +171,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     ],
                   );
                 });
-
           },
           icon: Icon(
             Icons.add,
@@ -271,8 +280,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                               onPressed: () {
                                 setState(() {
                                   DataArticle.deletePost(article.id!);
-                                  DatabaseService()
-                                      .deleteArticle(article.id!);
+                                  DatabaseService().deleteArticle(article.id!);
                                 });
                               },
                               icon: Icon(
@@ -280,107 +288,122 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                            // Sua
-                  onPressed: () {
-                      showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  String content = "";
-                  var titleController = TextEditingController();
-                  var contentController = TextEditingController();
-                  titleController.text=article.title ?? 'Null';
-                  contentController.text=article.content ?? 'Null';
+                              // Sua
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      String content = "";
+                                      var titleController =
+                                          TextEditingController();
+                                      var contentController =
+                                          TextEditingController();
+                                      titleController.text =
+                                          article.title ?? 'Null';
+                                      contentController.text =
+                                          article.content ?? 'Null';
 
-                  return AlertDialog(
-                    scrollable: true,
-                    title: Text(
-                      'Add an Article',
-                      style: AppFonts.headStyle,
-                    ),
-                    content: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Form(
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Title',
-                                    style: AppFonts.title,
-                                  ),
-                                ]),
-                            Container(
-                              width: 500,
-                              padding: EdgeInsets.only(bottom: 16),
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  
-                                  fillColor: Colors.lightBlue[100],
-                                  //icon: Icon(Icons.account_box),
-                                ),
-                                style: AppFonts.content,
-                                controller: titleController,
-                              ),
-                            ),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Content',
-                                    style: AppFonts.title,
-                                  ),
-                                ]),
-                            Container(
-                              padding: EdgeInsets.only(top: 16),
-                              height: 10 * 24.0,
-                              child: TextField(
-                                controller: contentController,
-                                maxLines: 10,
-                                style: AppFonts.content,
-                                decoration: InputDecoration(
-                                  fillColor: Colors.lightBlue[100],
-                                  filled: true,
-                                ),
-                                onChanged: (value) {
-                                  content = value;
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text("Cancel"),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      TextButton(
-                          child: Text("Submit"),
-                          onPressed: () {
-                            // ArticlePost articlePost = ArticlePost(
-                            //   null,
-                            //   titleController.text,
-                            //   DateTime.now(),
-                            //   contentController.text,
-                            //   null,
-                            //   'JOcWUTwArybiZjO9CelOhvBApCT2',
-                            //   null,
-                            // );
-                            // print(articlePost.toString());
-                            DatabaseService().modifyTitleAndContentArticle(article.id ?? 'null',titleController.text,contentController.text);
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Add an Article',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Column(
+                                              children: <Widget>[
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Title',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  width: 500,
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 16),
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                      //icon: Icon(Icons.account_box),
+                                                    ),
+                                                    style: AppFonts.content,
+                                                    controller: titleController,
+                                                  ),
+                                                ),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Content',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.only(top: 16),
+                                                  height: 10 * 24.0,
+                                                  child: TextField(
+                                                    controller:
+                                                        contentController,
+                                                    maxLines: 10,
+                                                    style: AppFonts.content,
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                      filled: true,
+                                                    ),
+                                                    onChanged: (value) {
+                                                      content = value;
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text("Cancel"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: Text("Submit"),
+                                              onPressed: () {
+                                                // ArticlePost articlePost = ArticlePost(
+                                                //   null,
+                                                //   titleController.text,
+                                                //   DateTime.now(),
+                                                //   contentController.text,
+                                                //   null,
+                                                //   'JOcWUTwArybiZjO9CelOhvBApCT2',
+                                                //   null,
+                                                // );
+                                                // print(articlePost.toString());
+                                                DatabaseService()
+                                                    .modifyTitleAndContentArticle(
+                                                        article.id ?? 'null',
+                                                        titleController.text,
+                                                        contentController.text);
 
-                            Navigator.pop(context);
-                          })
-                    ],
-                  );
-                });
-                  },
-                  icon: Icon(
-                    CupertinoIcons.pen,
-                    color: ColorController().getColor().colorText,
-                  ))),
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
+                              icon: Icon(
+                                CupertinoIcons.pen,
+                                color: ColorController().getColor().colorText,
+                              ))),
                         ]))
                     .toList(),
           ),
