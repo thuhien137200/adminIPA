@@ -9,10 +9,24 @@ class Topic {
   String get idTopic{
     return topic_id?? '-1';
   }
+
+  void setTopicId(String id){
+    this.topic_id=id;
+  }
+
+  void setTopicName(String name){
+    this.topic_name=name;
+  }
+
   factory Topic.fromDocumentSnapshot(
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
     return Topic.fromJson(documentSnapshot.data());
   }
+
+    Map<String, dynamic> toJson() => {
+        if (topic_id != null) 'topic_id': topic_id,
+        if (topic_name != null) 'topic_name': topic_name,
+      };
 
   factory Topic.fromJson(Map<String, dynamic>? data) {
     final String? topic_id = data?['topic_id'];

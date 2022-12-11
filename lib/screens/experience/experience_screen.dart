@@ -73,24 +73,30 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     ]);
   }
 
-  Container topicSelection(Topic topic, TextEditingController topicController) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: Color.fromARGB(255, 105, 179, 240),
-      ),
-      child: InkWell(
-          onTap: () {
-            setState(() {
-              topicController.text = (topic.topic_name ?? 'Null');
-              //topicName=topic.topic_name??'Null';
-              topicId = topic.idTopic;
-              topicIdController.text = topicId;
-              print(topicId);
-            });
-          },
-          child: Text(topic.topic_name ?? 'null')),
+  Row topicSelection(Topic topic, TextEditingController topicController) {
+
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: Color.fromARGB(255, 105, 179, 240),
+          ),
+          child: InkWell(
+              onTap: () {
+                setState(() {
+                  topicController.text = (topic.topic_name ?? 'Null');
+                  //topicName=topic.topic_name??'Null';
+                  topicId = topic.idTopic;
+                  topicIdController.text = topicId;
+                  print(topicId);
+                });
+              },
+              child: Text(topic.topic_name ?? 'null')),
+        ),
+        const SizedBox(width: 8,),
+      ],
     );
   }
 
@@ -183,6 +189,16 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
+
+                             if (topicController.text == '' || titleController.text==''|| contentController.text=='') {
+                              var snackBar = const SnackBar(
+                                  content: Text(
+                                      'Topic,title and content does not allow null'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              return;
+                            }
+
                             ExperiencePost experiencePost = ExperiencePost(
                                 null,
                                 topicId,
@@ -192,14 +208,9 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 null,
                                 null,
                                 false);
-                            print(experiencePost.toString());
-                            // experiencePost.setContent(contentController.text);
-                            // experiencePost.setTitle(titleController.text);
-                            // experiencePost.setCreated_at(DateTime.now());
-                            // ExperiencePost.fromJson(
-                            //     jsonDecode(jsonEncode(experiencePost)));
+                         
                             DatabaseService().addExperiencePost(experiencePost);
-
+                            
                             Navigator.pop(context);
                           })
                     ],
@@ -381,7 +392,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                       return AlertDialog(
                                         scrollable: true,
                                         title: Text(
-                                          'Modify Experience Post',
+                                          'Modify Topic',
                                           style: AppFonts.headStyle,
                                         ),
                                         content: Padding(
