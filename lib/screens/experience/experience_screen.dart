@@ -74,6 +74,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
   }
 
   Row topicSelection(Topic topic, TextEditingController topicController) {
+
     return Row(
       children: [
         Container(
@@ -188,6 +189,16 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
+
+                             if (topicController.text == '' || titleController.text==''|| contentController.text=='') {
+                              var snackBar = const SnackBar(
+                                  content: Text(
+                                      'Topic,title and content does not allow null'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              return;
+                            }
+
                             ExperiencePost experiencePost = ExperiencePost(
                                 null,
                                 topicId,
@@ -197,14 +208,9 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 null,
                                 null,
                                 false);
-                            print(experiencePost.toString());
-                            // experiencePost.setContent(contentController.text);
-                            // experiencePost.setTitle(titleController.text);
-                            // experiencePost.setCreated_at(DateTime.now());
-                            // ExperiencePost.fromJson(
-                            //     jsonDecode(jsonEncode(experiencePost)));
+                         
                             DatabaseService().addExperiencePost(experiencePost);
-
+                            
                             Navigator.pop(context);
                           })
                     ],

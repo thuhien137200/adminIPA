@@ -148,7 +148,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 titleController.text == '') {
                               var snackBar = const SnackBar(
                                   content: Text(
-                                      'Title Or Content does not allow null'));
+                                      'Title And Content does not allow null'));
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                               return;
@@ -413,16 +413,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                           TextButton(
                                               child: Text("Submit"),
                                               onPressed: () {
-                                                // ArticlePost articlePost = ArticlePost(
-                                                //   null,
-                                                //   titleController.text,
-                                                //   DateTime.now(),
-                                                //   contentController.text,
-                                                //   null,
-                                                //   'JOcWUTwArybiZjO9CelOhvBApCT2',
-                                                //   null,
-                                                // );
-                                                // print(articlePost.toString());
+                                                if (contentController.text ==
+                                                        '' ||
+                                                    titleController.text ==
+                                                        '') {
+                                                  var snackBar = const SnackBar(
+                                                      content: Text(
+                                                          'Title And Content does not allow null'));
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(snackBar);
+                                                  return;
+                                                }
                                                 DatabaseService()
                                                     .modifyTitleAndContentArticle(
                                                         article.id ?? 'null',
