@@ -279,8 +279,43 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           DataCell(IconButton(
                               onPressed: () {
                                 setState(() {
-                                  DataArticle.deletePost(article.id!);
-                                  DatabaseService().deleteArticle(article.id!);
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          scrollable: true,
+                                          title: Text(
+                                            'Notice',
+                                            style: AppFonts.headStyle,
+                                          ),
+                                          content: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Are you sure you want to delete this Article ?',
+                                                  style: AppFonts.title,
+                                                ),
+                                              ]),
+                                          actions: [
+                                            TextButton(
+                                              child: Text("No"),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                            ),
+                                            TextButton(
+                                                child: Text("Yes"),
+                                                onPressed: () {
+                                                  DataArticle.deletePost(
+                                                      article.id!);
+                                                  DatabaseService()
+                                                      .deleteArticle(
+                                                          article.id!);
+                                                  Navigator.pop(context);
+                                                })
+                                          ],
+                                        );
+                                      });
                                 });
                               },
                               icon: Icon(
@@ -306,7 +341,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                       return AlertDialog(
                                         scrollable: true,
                                         title: Text(
-                                          'Add an Article',
+                                          'Edit information',
                                           style: AppFonts.headStyle,
                                         ),
                                         content: Padding(
