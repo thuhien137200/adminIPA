@@ -1,12 +1,16 @@
+import 'dart:html';
+import 'dart:io';
+
 import 'package:admin_ipa/screens/article/data_article.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
 import '../../controller/color_theme_controller.dart';
 import '../../model/data_article.dart';
-import '../../services/articles_service.dart';
 import '../../services/database_service.dart';
 import '../../style/style.dart';
 
@@ -19,15 +23,37 @@ class ArticleScreen extends StatefulWidget {
 
 class _ArticleScreenState extends State<ArticleScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-
+  String imgUrl='';
   late Future<List<ArticlePost>?> _dataFuture;
-
+  double progress=0;
   @override
   void initState() {
     FirebaseFirestore _db = FirebaseFirestore.instance;
     _dataFuture =
         _db.collection('articles').get().then(_articlesFromQuerySnapshot);
     super.initState();
+  }
+
+  uploadToStorage() {
+    var input = FileUploadInputElement()..accept = 'image/*';
+    FirebaseStorage fs = FirebaseStorage.instance;
+    input.click();
+    input.onChange.listen((event) {
+      final file = input.files?.first;
+      final reader = FileReader();
+      reader.readAsDataUrl(file!);
+      reader.onLoadEnd.listen((event) async {
+        var snapshot = await fs.ref().child(file!.name).putBlob(file);
+
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+        setState(() {
+          progress=snapshot.bytesTransferred/snapshot.totalBytes;
+          imgUrl = downloadUrl;
+          print(imgUrl);
+        });
+
+      });
+    });
   }
 
   List<ArticlePost>? _articlesFromQuerySnapshot(
@@ -77,89 +103,107 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   var titleController = TextEditingController();
                   var contentController = TextEditingController();
 
-                  return AlertDialog(
-                    scrollable: true,
-                    title: Text(
-                      'Add an Article',
-                      style: AppFonts.headStyle,
-                    ),
-                    content: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Form(
-                        child: Column(
-                          children: <Widget>[
-                            Row(
+                  return StatefulBuilder(
+                      builder: (context,setState){
+                        return AlertDialog(
+                          scrollable: true,
+                          title: Text(
+                            'Add an Article',
+                            style: AppFonts.headStyle,
+                          ),
+                          content: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Form(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Title',
-                                    style: AppFonts.title,
+                                children: <Widget>[
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Title',
+                                          style: AppFonts.title,
+                                        ),
+                                      ]),
+                                  Container(
+                                    width: 500,
+                                    padding: EdgeInsets.only(bottom: 16),
+                                    child: TextFormField(
+                                      decoration: InputDecoration(
+                                        fillColor: Colors.lightBlue[100],
+                                        //icon: Icon(Icons.account_box),
+                                      ),
+                                      style: AppFonts.content,
+                                      controller: titleController,
+                                    ),
                                   ),
-                                ]),
-                            Container(
-                              width: 500,
-                              padding: EdgeInsets.only(bottom: 16),
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  fillColor: Colors.lightBlue[100],
-                                  //icon: Icon(Icons.account_box),
-                                ),
-                                style: AppFonts.content,
-                                controller: titleController,
-                              ),
-                            ),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Content',
-                                    style: AppFonts.title,
-                                  ),
-                                ]),
-                            Container(
-                              padding: EdgeInsets.only(top: 16),
-                              height: 10 * 24.0,
-                              child: TextField(
-                                controller: contentController,
-                                maxLines: 10,
-                                style: AppFonts.content,
-                                decoration: InputDecoration(
-                                  fillColor: Colors.lightBlue[100],
-                                  filled: true,
-                                ),
-                                onChanged: (value) {
-                                  content = value;
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text("Cancel"),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      TextButton(
-                          child: Text("Submit"),
-                          onPressed: () {
-                            ArticlePost articlePost = ArticlePost(
-                              null,
-                              titleController.text,
-                              DateTime.now(),
-                              contentController.text,
-                              null,
-                              'JOcWUTwArybiZjO9CelOhvBApCT2',
-                              null,
-                            );
-                            print(articlePost.toString());
-                            DatabaseService().addArticle(articlePost);
+                                  FlatButton(onPressed: (){
+                                    uploadToStorage();
+                                  }, child:
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.blueAccent
+                                    ),
+                                    child: Text(
+                                      'Up load image',
+                                      style: AppFonts.title,
+                                    ),
 
-                            Navigator.pop(context);
-                          })
-                    ],
-                  );
+                                  )),
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Content',
+                                          style: AppFonts.title,
+                                        ),
+                                      ]),
+                                  Container(
+                                    padding: EdgeInsets.only(top: 16),
+                                    height: 10 * 24.0,
+                                    child: TextField(
+                                      controller: contentController,
+                                      maxLines: 10,
+                                      style: AppFonts.content,
+                                      decoration: InputDecoration(
+                                        fillColor: Colors.lightBlue[100],
+                                        filled: true,
+                                      ),
+                                      onChanged: (value) {
+                                        content = value;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              child: Text("Cancel"),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            TextButton(
+                                child: Text("Submit"),
+                                onPressed: () {
+                                  ArticlePost articlePost = ArticlePost(
+                                    null,
+                                    titleController.text,
+                                    DateTime.now(),
+                                    contentController.text,
+                                    null,
+                                    'JOcWUTwArybiZjO9CelOhvBApCT2',
+                                    imgUrl,
+                                    null,
+                                  );
+                                  print(articlePost.toString());
+                                  DatabaseService().addArticle(articlePost);
+
+                                  Navigator.pop(context);
+                                })
+                          ],
+                        );
+                      });
                 });
           },
           icon: Icon(

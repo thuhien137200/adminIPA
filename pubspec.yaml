@@ -44,6 +44,8 @@ dependencies:
   fl_chart: ^0.35.0
   fluttertoast: ^8.1.1
   google_fonts: ^3.0.1
+  file_picker: ^5.2.3
+  firebase_storage: ^11.0.7
 
 dev_dependencies:
   flutter_test:
