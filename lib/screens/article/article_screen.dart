@@ -376,7 +376,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                           article.title ?? 'Null';
                                       contentController.text =
                                           article.content ?? 'Null';
-
+                                      imgUrl=article.photoUrl??'';
                                       return AlertDialog(
                                         scrollable: true,
                                         title: Text(

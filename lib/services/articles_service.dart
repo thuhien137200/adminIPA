@@ -17,28 +17,40 @@ mixin ArticlePostHandle {
     }).toList();
   }
 
-   void modifyContentArticle(String articleId, String newContent){
+  void modifyContentArticle(String articleId, String newContent) {
     _db.collection('articles').doc(articleId).update({
-        "content": newContent,
-      });
-      print('Modify content success');
+      "content": newContent,
+    });
+    print('Modify content success');
   }
 
+  void modifyTitleContentArticleAndUrl(
+      String articleId, String newTitle, String newContent, String url) {
+    if (url.compareTo('') == 0)
+      modifyTitleAndContentArticle(articleId, newTitle, newContent);
+    else {
+      _db
+          .collection('articles')
+          .doc(articleId)
+          .update({"title": newTitle, "photoUrl": url, "content": newContent});
+    }
 
-    void modifyTitleContentArticleAndUrl(String articleId, String newTitle, String newContent, String url){
-    _db.collection('articles').doc(articleId).update({
-        "title": newTitle,
-        "photoUrl":url,
-        "content": newContent
-      });
-      print('Modify title success');
+    print('Modify title success');
   }
 
-    void modifyCategoriesArticle(String articleId, String newContent){
+  void modifyTitleAndContentArticle(
+      String articleId, String newTitle, String newContent) {
+    _db
+        .collection('articles')
+        .doc(articleId)
+        .update({"title": newTitle, "content": newContent});
+  }
+
+  void modifyCategoriesArticle(String articleId, String newContent) {
     _db.collection('articles').doc(articleId).update({
-        "categories": newContent,
-      });
-      print('Modify success');
+      "categories": newContent,
+    });
+    print('Modify success');
   }
 
   Stream<List<ArticlePost>?> get allArticles {
@@ -52,8 +64,6 @@ mixin ArticlePostHandle {
     return _db.collection('articles').get().then(_articlesFromQuerySnapshot);
   }
 
-  
-
   void addArticle(ArticlePost article) async {
     DocumentReference doc = _db.collection('articles').doc();
     String doc_id = doc.id;
@@ -64,7 +74,6 @@ mixin ArticlePostHandle {
     // Add article comments to firebase
     CollectionReference subcollection =
         _db.collection('articles').doc(doc_id).collection('comments');
-    
 
     // Add article to firebase
     doc
@@ -105,6 +114,4 @@ mixin ArticlePostHandle {
         .then((value) => print('Delete an article successfully'))
         .catchError((error) => print('Failed to delete an article'));
   }
-
-
 }
