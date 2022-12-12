@@ -25,9 +25,10 @@ mixin ArticlePostHandle {
   }
 
 
-    void modifyTitleAndContentArticle(String articleId, String newTitle, String newContent){
+    void modifyTitleContentArticleAndUrl(String articleId, String newTitle, String newContent, String url){
     _db.collection('articles').doc(articleId).update({
         "title": newTitle,
+        "photoUrl":url,
         "content": newContent
       });
       print('Modify title success');

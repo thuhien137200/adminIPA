@@ -137,19 +137,24 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                       controller: titleController,
                                     ),
                                   ),
-                                  FlatButton(onPressed: (){
-                                    uploadToStorage();
-                                  }, child:
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.blueAccent
-                                    ),
-                                    child: Text(
-                                      'Up load image',
-                                      style: AppFonts.title,
-                                    ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      FlatButton(onPressed: (){
+                                        uploadToStorage();
+                                      }, child:
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.blueAccent
+                                        ),
+                                        child: Text(
+                                          'Upload Image',
+                                          style: AppFonts.title,
+                                        ),
 
-                                  )),
+                                      )),
+                                    ],
+                                  ),
                                   Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
@@ -406,6 +411,19 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                                     controller: titleController,
                                                   ),
                                                 ),
+                                                FlatButton(onPressed: (){
+                                                  uploadToStorage();
+                                                }, child:
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.blueAccent
+                                                  ),
+                                                  child: Text(
+                                                    'Upload Image',
+                                                    style: AppFonts.title,
+                                                  ),
+
+                                                )),
                                                 Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.start,
@@ -458,10 +476,12 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                                 // );
                                                 // print(articlePost.toString());
                                                 DatabaseService()
-                                                    .modifyTitleAndContentArticle(
+                                                    .modifyTitleContentArticleAndUrl(
                                                         article.id ?? 'null',
                                                         titleController.text,
-                                                        contentController.text);
+                                                        contentController.text,
+                                                        imgUrl,
+                                                );
 
                                                 Navigator.pop(context);
                                               })
