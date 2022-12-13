@@ -92,6 +92,8 @@ mixin ArticlePostHandle {
     return result;
   }
 
+
+
   Future deleteArticle(String articlePostId) async {
     if (articlePostId == null) {
       print('Failed to delete an article');

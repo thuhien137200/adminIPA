@@ -11,6 +11,7 @@ import 'package:admin_ipa/screens/topic/topic_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/experience/experience_screen.dart';
+import '../screens/report_comment/report_comment_screen.dart';
 
 class DatabaseSideBar {
   static int selectionIndex = 0;
@@ -47,6 +48,10 @@ class DatabaseSideBar {
         content: "Experience post",
         iconData: Icons.star_border,
         iconData_onClick: Icons.star);
+    SideBox reportComment = SideBox(
+        content: "Report Comment",
+        iconData: Icons.report,
+        iconData_onClick: Icons.report_outlined);
     SideBox setting = SideBox(
         content: "Setting",
         iconData: Icons.settings_outlined,
@@ -61,6 +66,7 @@ class DatabaseSideBar {
       company,
       topic,
       experience,
+      reportComment,
       setting
     ];
     return result;
@@ -75,6 +81,7 @@ class DatabaseSideBar {
     Widget company = CompanyScreen();
     Widget topic = TopicScreen();
     Widget experience = ExperienceScreen();
+    Widget reportComment= ReportCommentScreen();
     Widget setting = SettingScreen(size: size);
     List<Widget> result = [
       dashboard,
@@ -85,6 +92,7 @@ class DatabaseSideBar {
       company,
       topic,
       experience,
+      reportComment,
       setting
     ];
     return result[selectionIndex];
