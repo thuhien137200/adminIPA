@@ -1,7 +1,10 @@
+import 'dart:html';
+
 import 'package:admin_ipa/model/data_company.dart';
 import 'package:admin_ipa/screens/company/data_company.dart';
 import 'package:admin_ipa/services/database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +22,7 @@ class CompanyScreen extends StatefulWidget {
 class _CompanyScreenState extends State<CompanyScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   late Future<List<Company>?> _dataFuture;
-
+  String imgUrl='';
   List<Company>? _companiesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
     List<Company>? res = querySnapshot.docs
@@ -31,6 +34,27 @@ class _CompanyScreenState extends State<CompanyScreen> {
     }).toList();
     DataCompany.companyData = res ?? [];
     return res;
+  }
+
+  uploadToStorage() {
+    var input = FileUploadInputElement()..accept = 'image/*';
+    FirebaseStorage fs = FirebaseStorage.instance;
+    input.click();
+    input.onChange.listen((event) {
+      final file = input.files?.first;
+      final reader = FileReader();
+      reader.readAsDataUrl(file!);
+      reader.onLoadEnd.listen((event) async {
+        var snapshot = await fs.ref().child(file!.name).putBlob(file);
+
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+        setState(() {
+          imgUrl = downloadUrl;
+          print(imgUrl);
+        });
+
+      });
+    });
   }
 
   Row HeaderCompany() {
@@ -100,24 +124,22 @@ class _CompanyScreenState extends State<CompanyScreen> {
                               ),
                             ),
                             Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Logo Url',
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                FlatButton(onPressed: (){
+                                  uploadToStorage();
+                                }, child:
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.blueAccent
+                                  ),
+                                  child: Text(
+                                    'Upload Image',
                                     style: AppFonts.title,
                                   ),
-                                ]),
-                            Container(
-                              width: 500,
-                              padding: EdgeInsets.only(bottom: 16),
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  fillColor: Colors.lightBlue[100],
-                                  //icon: Icon(Icons.account_box),
-                                ),
-                                style: AppFonts.content,
-                                controller: logoUrlController,
-                              ),
+
+                                )),
+                              ],
                             ),
                           ],
                         ),
@@ -134,7 +156,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                             Company company = Company(
                               null,
                               nameController.text,
-                              logoUrlController.text,
+                              imgUrl,
                             );
                             DatabaseService().addCompany(company);
 
@@ -146,10 +168,6 @@ class _CompanyScreenState extends State<CompanyScreen> {
           },
           icon: Icon(Icons.add, color: ColorController().getColor().colorText))
     ]);
-  }
-
-  void removeCompany() {
-    //dosomething
   }
 
   DataRow RowEmpty() {
@@ -382,6 +400,24 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                         logoUrlController,
                                                   ),
                                                 ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: [
+                                                    FlatButton(onPressed: (){
+                                                      uploadToStorage();
+                                                    }, child:
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.blueAccent
+                                                      ),
+                                                      child: Text(
+                                                        'Upload Image',
+                                                        style: AppFonts.title,
+                                                      ),
+
+                                                    )),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -399,7 +435,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                     .modifyCompanyInformation(
                                                         company.id ?? 'null',
                                                         nameController.text,
-                                                        logoUrlController.text);
+                                                        imgUrl.compareTo('') == 0 ?logoUrlController.text: imgUrl);
                                                 Navigator.pop(context);
                                               })
                                         ],
