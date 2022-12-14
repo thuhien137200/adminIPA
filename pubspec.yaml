@@ -70,6 +70,7 @@ flutter:
   assets:
       - assets/
       - assets/login/
+      - assets/images/login_settings/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

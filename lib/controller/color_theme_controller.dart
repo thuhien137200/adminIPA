@@ -1,7 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class ColorController {
   static int index = 0;
+
+  Stream<ColorTheme?> getColorStream() {
+    Stream<ColorTheme> stream = Stream.value(getColor());
+    return stream;
+  }
+
   ColorTheme getColor() {
     ColorTheme dartTheme = ColorTheme(
         colorBody: Color.fromRGBO(19, 19, 28, 1),

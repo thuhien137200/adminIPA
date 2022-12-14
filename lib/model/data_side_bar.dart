@@ -75,7 +75,7 @@ class DatabaseSideBar {
     Widget company = CompanyScreen();
     Widget topic = TopicScreen();
     Widget experience = ExperienceScreen();
-    Widget setting = SettingScreen(size: size);
+    Widget setting = SettingScreen();
     List<Widget> result = [
       dashboard,
       article,
@@ -84,7 +84,7 @@ class DatabaseSideBar {
       account,
       company,
       topic,
-      experience,
+      experience, //empty
       setting
     ];
     return result[selectionIndex];

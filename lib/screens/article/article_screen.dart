@@ -66,14 +66,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ),
       IconButton(
           onPressed: () {
-
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   String content = "";
                   var titleController = TextEditingController();
                   var contentController = TextEditingController();
-                  
+
                   return AlertDialog(
                     scrollable: true,
                     title: Text('Add Article Post'),
@@ -104,7 +103,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 },
                               ),
                             ),
-                            
                           ],
                         ),
                       ),
@@ -117,24 +115,23 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
-                            ArticlePost articlePost =
-                                ArticlePost(
-                                  null,
-                                  titleController.text,
-                                  DateTime.now(),
-                                  contentController.text,
-                                  null,
-                                  'JOcWUTwArybiZjO9CelOhvBApCT2',
-                                  null,
-                                );
-                                print(articlePost.toString());
+                            ArticlePost articlePost = ArticlePost(
+                              null,
+                              titleController.text,
+                              DateTime.now(),
+                              contentController.text,
+                              null,
+                              'JOcWUTwArybiZjO9CelOhvBApCT2',
+                              null,
+                            );
+                            print(articlePost.toString());
                             // experiencePost.setContent(contentController.text);
                             // experiencePost.setTitle(titleController.text);
                             // experiencePost.setCreated_at(DateTime.now());
                             // ExperiencePost.fromJson(
                             //     jsonDecode(jsonEncode(experiencePost)));
                             DatabaseService().addArticle(articlePost);
-                            
+
                             Navigator.pop(context);
                           })
                     ],
@@ -257,11 +254,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    CupertinoIcons.pen,
-                    color: ColorController().getColor().colorText,
-                  ))),
+                              onPressed: () {},
+                              icon: Icon(
+                                CupertinoIcons.pen,
+                                color: ColorController().getColor().colorText,
+                              ))),
                         ]))
                     .toList(),
           ),
@@ -284,6 +281,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 child: SafeArea(
                   child: Container(
                     color: ColorController().getColor().colorBody,
+                    height: MediaQuery.of(context).size.height,
                     child: SingleChildScrollView(
                       padding:
                           EdgeInsets.symmetric(vertical: 30, horizontal: 30),

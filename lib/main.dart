@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
             }
             if (snapshot.connectionState == ConnectionState.done) {
               return const LoginScreen();
+              // return MyHomePage();
             }
             return Center(child: CircularProgressIndicator());
           }),
@@ -56,23 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      appBar(context),
-      body(context),
-    ]);
-    // return LoginScreen();
+    return body(context);
   }
 
   Container body(BuildContext context) {
-    Size size = Size(MediaQuery.of(context).size.width,
-        MediaQuery.of(context).size.height - 60);
+    Size size = Size(
+        MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
     return Container(
       height: size.height,
       width: size.width,
       color: colorBody,
       child: Row(
         children: [
-          Flexible(flex: 2, child: sideBar(size.height, size.width * 2 / 12)),
+          Flexible(
+            flex: 2,
+            child: sideBar(size.height, size.width * 2 / 12),
+          ),
           Flexible(
               flex: 10,
               child: DatabaseSideBar()
@@ -89,8 +89,16 @@ class _MyHomePageState extends State<MyHomePage> {
           color: colorBox,
           boxShadow: [BoxShadow(color: colorShadowBox, blurRadius: 5)]),
       child: ListView.builder(
-        itemCount: DatabaseSideBar().getData().length,
+        itemCount: DatabaseSideBar().getData().length + 2,
         itemBuilder: (BuildContext context, int index) {
+          if (index == 0) return avatarSideBarMain(width);
+          if (index > 0) index -= 1;
+          if (index == DatabaseSideBar().getData().length - 1)
+            return SizedBox(
+              width: 5,
+              height: height - 750 > 0 ? height - 740 : 0,
+            );
+          if (index == DatabaseSideBar().getData().length) index -= 1;
           return GestureDetector(
             child: DatabaseSideBar().getCustomSideBarBox(index, width),
             onTap: () {
@@ -101,6 +109,68 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ),
+    );
+  }
+
+  TextStyle textStyleContent() {
+    return TextStyle(
+        fontSize: 18,
+        overflow: TextOverflow.ellipsis,
+        color: Color.fromRGBO(124, 116, 228, 1),
+        fontFamily: "Manrope-Extrabold",
+        decoration: TextDecoration.none,
+        fontWeight: FontWeight.w400);
+  }
+
+  Widget avatarSideBarMain(double width) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Row(children: [
+        CircleAvatar(
+          radius: 30,
+          backgroundImage:
+              AssetImage("assets/images/login_settings/avatar.png"),
+        ),
+        (width > 100)
+            ? Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: (width > 176) ? width - 156 : width - 76,
+                        child: Text(
+                          " IPA",
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 20,
+                            overflow: TextOverflow.clip,
+                            color: Color.fromRGBO(124, 116, 228, 1),
+                            fontFamily: "Manrope-Extrabold",
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                      (width > 176) ? customBoxChangeColor() : Container()
+                    ],
+                  ),
+                  Container(
+                    width: width - 76,
+                    child: Text(
+                      " Username",
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 16,
+                        overflow: TextOverflow.clip,
+                        color: Color.fromRGBO(124, 116, 228, 1),
+                        fontFamily: "Manrope",
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : Container()
+      ]),
     );
   }
 
@@ -119,37 +189,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextStyle(color: Colors.white, decoration: TextDecoration.none),
           ),
         ),
-        Container(
-          height: 60,
-          margin: EdgeInsets.symmetric(horizontal: 10),
-          child: FlutterSwitch(
-            width: 60.0,
-            height: 30.0,
-            borderRadius: 30.0,
-            padding: 2.0,
-            value: statusColorTheme,
-            activeToggleColor: Color(0xFF6E40C9),
-            inactiveToggleColor: Color(0xFF2F363D),
-            activeColor: Color(0xFF271052),
-            inactiveColor: Colors.white,
-            activeIcon: Icon(
-              Icons.nightlight_round,
-              color: Color(0xFFF8E3A1),
-            ),
-            inactiveIcon: Icon(
-              Icons.wb_sunny,
-              color: Color(0xFFFFDF5D),
-            ),
-            onToggle: (val) {
-              setState(() {
-                statusColorTheme = val;
-                ColorController().changeColor();
-                changeColor(ColorController().getColor());
-              });
-            },
-          ),
-        ),
+        customBoxChangeColor(),
       ]),
+    );
+  }
+
+  Container customBoxChangeColor() {
+    return Container(
+      height: 60,
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      child: FlutterSwitch(
+        width: 60.0,
+        height: 30.0,
+        borderRadius: 30.0,
+        padding: 2.0,
+        value: statusColorTheme,
+        activeToggleColor: Color(0xFF6E40C9),
+        inactiveToggleColor: Color(0xFF2F363D),
+        activeColor: Color(0xFF271052),
+        inactiveColor: Colors.white,
+        activeIcon: Icon(
+          Icons.nightlight_round,
+          color: Color(0xFFF8E3A1),
+        ),
+        inactiveIcon: Icon(
+          Icons.wb_sunny,
+          color: Color(0xFFFFDF5D),
+        ),
+        onToggle: (val) {
+          setState(() {
+            statusColorTheme = val;
+            ColorController().changeColor();
+            changeColor(ColorController().getColor());
+          });
+        },
+      ),
     );
   }
 

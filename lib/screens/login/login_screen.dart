@@ -1,7 +1,9 @@
-import 'package:admin_ipa/main.dart';
-import 'package:admin_ipa/model/data_account.dart';
-import 'package:admin_ipa/services/account_service.dart';
 import 'package:flutter/material.dart';
+
+import '../../model/data_account.dart';
+import '../../services/account_service.dart';
+import 'component/login_component.dart';
+import 'controller/login_controller.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class LoginScreen extends StatelessWidget {
       body: Stack(children: [
         Container(color: Color.fromRGBO(214, 230, 213, 1)),
         Background(),
-        Login()
+        Body()
       ]),
     );
   }
@@ -37,8 +39,8 @@ class Background extends StatelessWidget {
   }
 }
 
-class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+class Body extends StatelessWidget {
+  const Body({Key? key}) : super(key: key);
 
   Future<List<Account>> loadData() async {
     List<Account>? result = [];
@@ -49,140 +51,31 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width / 2;
-    bool isChecked = false;
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
     return FutureBuilder(
       future: loadData(),
       builder: (context, AsyncSnapshot<List<Account>> snapshot) {
+        if (snapshot.hasError) {
+          print("Loi ${snapshot.error}");
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          LoginController.data = snapshot.data ?? [];
+          return Container(
+            width: width,
+            decoration: BoxDecoration(color: Colors.white54),
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Align(child: SingleChildScrollView(child: Login())),
+          );
+        }
         return Container(
           width: width,
           decoration: BoxDecoration(color: Colors.white54),
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Align(
               child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Welcome",
-                    style: TextStyle(
-                        fontSize: 40,
-                        color: Color.fromRGBO(56, 67, 55, 1),
-                        decoration: TextDecoration.none,
-                        fontFamily: "Manrope-ExtraBold")),
-                SizedBox(
-                  width: 1,
-                  height: 10,
-                ),
-                Text(
-                  "Email",
-                  style: textStyle(),
-                ),
-                Container(
-                  margin: EdgeInsets.all(10),
-                  height: 50,
-                  width: 300,
-                  decoration: boxDecoration(),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                        hintText: "Enter the email",
-                        hintStyle: TextStyle(color: Colors.grey.shade400),
-                        border: InputBorder.none),
-                  ),
-                ),
-                SizedBox(
-                  width: 1,
-                  height: 10,
-                ),
-                Text("Password", style: textStyle()),
-                Container(
-                  margin: EdgeInsets.all(10),
-                  height: 50,
-                  width: 300,
-                  decoration: boxDecoration(),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                        hintText: "Password",
-                        hintStyle: TextStyle(color: Colors.grey.shade400),
-                        border: InputBorder.none),
-                  ),
-                ),
-                Container(
-                  width: 300,
-                  child: Text(
-                    "Forget password?",
-                    style: textStyle(),
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                Container(
-                  width: 300,
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  child: Align(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (snapshot.hasError) {
-                          print("Loi ${snapshot.error}");
-                        }
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          // print(snapshot.data!.length);
-                          for (int i = 0;
-                              i < (snapshot.data ?? []).length;
-                              i++) {
-                            if (snapshot.data![i].email ==
-                                    emailController.text &&
-                                snapshot.data![i].password ==
-                                    passwordController.text) {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => MyHomePage()));
-                            }
-                          }
-                        }
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(167, 201, 165, 1),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Align(
-                            child: Text("Login",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Color.fromRGBO(56, 67, 55, 1),
-                                  fontFamily: "Manrope",
-                                  decoration: TextDecoration.none,
-                                ))),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: Login(),
           )),
         );
       },
     );
   }
-
-  TextStyle textStyle() {
-    return TextStyle(
-      fontSize: 16,
-      color: Color.fromRGBO(56, 67, 55, 1),
-      fontFamily: "Manrope",
-      decoration: TextDecoration.none,
-    );
-  }
-
-  BoxDecoration boxDecoration() => BoxDecoration(
-      color: Colors.white70,
-      borderRadius: BorderRadius.circular(15),
-      border: Border.all(color: Color.fromRGBO(167, 201, 165, 1)));
 }

@@ -188,6 +188,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 child: SafeArea(
                   child: Container(
                     color: ColorController().getColor().colorBody,
+                    height: MediaQuery.of(context).size.height,
                     child: SingleChildScrollView(
                       padding:
                           EdgeInsets.symmetric(vertical: 30, horizontal: 30),
