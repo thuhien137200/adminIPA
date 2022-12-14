@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
               print("Error: ${snapshot.error.toString()}");
             }
             if (snapshot.connectionState == ConnectionState.done) {
+              return MyHomePage();
               return const LoginScreen();
               // return MyHomePage();
             }
@@ -96,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (index == DatabaseSideBar().getData().length - 1)
             return SizedBox(
               width: 5,
-              height: height - 750 > 0 ? height - 740 : 0,
+              height: height - 780 > 0 ? height - 780 : 0,
             );
           if (index == DatabaseSideBar().getData().length) index -= 1;
           return GestureDetector(

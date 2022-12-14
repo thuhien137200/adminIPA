@@ -17,6 +17,42 @@ mixin ArticlePostHandle {
     }).toList();
   }
 
+  void modifyContentArticle(String articleId, String newContent) {
+    _db.collection('articles').doc(articleId).update({
+      "content": newContent,
+    });
+    print('Modify content success');
+  }
+
+  void modifyTitleContentArticleAndUrl(
+      String articleId, String newTitle, String newContent, String url) {
+    if (url.compareTo('') == 0)
+      modifyTitleAndContentArticle(articleId, newTitle, newContent);
+    else {
+      _db
+          .collection('articles')
+          .doc(articleId)
+          .update({"title": newTitle, "photoUrl": url, "content": newContent});
+    }
+
+    print('Modify title success');
+  }
+
+  void modifyTitleAndContentArticle(
+      String articleId, String newTitle, String newContent) {
+    _db
+        .collection('articles')
+        .doc(articleId)
+        .update({"title": newTitle, "content": newContent});
+  }
+
+  void modifyCategoriesArticle(String articleId, String newContent) {
+    _db.collection('articles').doc(articleId).update({
+      "categories": newContent,
+    });
+    print('Modify success');
+  }
+
   Stream<List<ArticlePost>?> get allArticles {
     return _db
         .collection('articles')
@@ -38,7 +74,6 @@ mixin ArticlePostHandle {
     // Add article comments to firebase
     CollectionReference subcollection =
         _db.collection('articles').doc(doc_id).collection('comments');
-    
 
     // Add article to firebase
     doc
@@ -69,4 +104,16 @@ mixin ArticlePostHandle {
 
 
 
+  Future deleteArticle(String articlePostId) async {
+    if (articlePostId == null) {
+      print('Failed to delete an article');
+      return;
+    }
+    print('$articlePostId');
+    DocumentReference doc = _db.collection('articles').doc('$articlePostId');
+    return doc
+        .delete()
+        .then((value) => print('Delete an article successfully'))
+        .catchError((error) => print('Failed to delete an article'));
+  }
 }

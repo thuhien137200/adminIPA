@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:admin_ipa/screens/experience/DataExperience.dart';
 import 'package:admin_ipa/services/database_service.dart';
 import 'package:admin_ipa/services/experience_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,21 +22,24 @@ class ExperienceScreen extends StatefulWidget {
 
 class _ExperienceScreenState extends State<ExperienceScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  var topicController= TextEditingController();
+
+  var topicIdController = TextEditingController();
   late Future<List<ExperiencePost>?> _dataFuture;
   final _formKey = GlobalKey<FormState>();
   late Future<List<Topic>?> _topicFuture;
-   String topicId ='';
+  String topicId = '';
 
   List<ExperiencePost>? _experienceFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<ExperiencePost>? res = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ExperiencePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ExperiencePost.test();
     }).toList();
+    DataExperience.dataExperience = res ?? [];
+    return res;
   }
 
   @override
@@ -65,27 +69,34 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
+      DataCell(Text("")),
     ]);
   }
 
-  Container topicSelection(Topic topic) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: Color.fromARGB(255, 105, 179, 240),
-      ),
-      child: InkWell(
-        onTap: (){
-          setState(() {
-            topicController.text=(topic.topic_name??'Null') ;
-            //topicName=topic.topic_name??'Null';
-            topicId=topic.idTopic;
-            print(topicId);
-          });
-        },
-        child: Text(topic.topic_name ?? 'null')
+  Row topicSelection(Topic topic, TextEditingController topicController) {
+
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: Color.fromARGB(255, 105, 179, 240),
+          ),
+          child: InkWell(
+              onTap: () {
+                setState(() {
+                  topicController.text = (topic.topic_name ?? 'Null');
+                  //topicName=topic.topic_name??'Null';
+                  topicId = topic.idTopic;
+                  topicIdController.text = topicId;
+                  print(topicId);
+                });
+              },
+              child: Text(topic.topic_name ?? 'null')),
         ),
+        const SizedBox(width: 8,),
+      ],
     );
   }
 
@@ -123,7 +134,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                   String content = "";
                   var titleController = TextEditingController();
                   var contentController = TextEditingController();
-                  
+                  var topicController = TextEditingController();
                   return AlertDialog(
                     scrollable: true,
                     title: Text('Add Experience Post'),
@@ -134,18 +145,16 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                           children: <Widget>[
                             Row(
                               children: [
-                                ...(topics!.map((e) => topicSelection(e))),
+                                ...(topics!.map((e) => topicSelection(e,topicController))),
                               ],
                             ),
-
                             TextFormField(
-                               decoration: InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Topic',
                                 //icon: Icon(Icons.account_box),
                               ),
                               controller: topicController,
                             ),
-
                             TextFormField(
                               decoration: InputDecoration(
                                 labelText: 'Title',
@@ -180,22 +189,26 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                       TextButton(
                           child: Text("Submit"),
                           onPressed: () {
-                            ExperiencePost experiencePost =
-                                ExperiencePost(
-                                  null,
-                                  topicId,
-                                  titleController.text,
-                                  DateTime.now(),
-                                  contentController.text,
-                                  null,
-                                  null,
-                                );
-                                print(experiencePost.toString());
-                            // experiencePost.setContent(contentController.text);
-                            // experiencePost.setTitle(titleController.text);
-                            // experiencePost.setCreated_at(DateTime.now());
-                            // ExperiencePost.fromJson(
-                            //     jsonDecode(jsonEncode(experiencePost)));
+
+                             if (topicController.text == '' || titleController.text==''|| contentController.text=='') {
+                              var snackBar = const SnackBar(
+                                  content: Text(
+                                      'Topic,title and content does not allow null'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              return;
+                            }
+
+                            ExperiencePost experiencePost = ExperiencePost(
+                                null,
+                                topicId,
+                                titleController.text,
+                                DateTime.now(),
+                                contentController.text,
+                                null,
+                                null,
+                                false);
+                         
                             DatabaseService().addExperiencePost(experiencePost);
                             
                             Navigator.pop(context);
@@ -229,7 +242,6 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       future: _dataFuture,
       builder: (BuildContext context,
           AsyncSnapshot<List<ExperiencePost>?> snapshot) {
-        List<ExperiencePost>? topics = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -271,22 +283,23 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               ),
               DataColumn(
                 label: Expanded(
-                  child: Text(
-                    '',
-                  ),
+                  child: Text('Delete', style: textStyleTableHeader()),
                 ),
               ),
               DataColumn(
                 label: Expanded(
-                  child: Text(
-                    '',
-                  ),
+                  child: Text('Edit', style: textStyleTableHeader()),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text('Approve', style: textStyleTableHeader()),
                 ),
               )
             ],
-            rows: topics == null
+            rows: DataExperience.dataExperience == null
                 ? [RowEmpty()]
-                : topics
+                : DataExperience.dataExperience
                     .map((post) => DataRow(cells: [
                           DataCell(Text(
                             post.topic_id!,
@@ -301,93 +314,218 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                             style: textStyleTableContent(),
                           )),
                           DataCell(IconButton(
-                              onPressed: () {},
+                            //Delete Function
+                              onPressed: () {
+                                 showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Delete Experience Post',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children:const [
+                                                  Icon(Icons.warning),
+                                                  SizedBox(width:12),
+                                                  Text('Are you sure you want to delete?'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text("No"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: const Text("Yes"),
+                                              onPressed: (){
+                                                DatabaseService().deleteExperiencePost(post.post_id ?? 'null');
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
                               icon: Icon(
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    CupertinoIcons.pen,
-                    color: ColorController().getColor().colorText,
-                  ))),
+                              //sua
+                              onPressed: () async {
+                                var topics = await _topicFuture;
+                                var topicController = TextEditingController();
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      for (int i = 0; i < topics!.length; i++) {
+                                        if (topics[i].topic_id?.compareTo(
+                                                post.topic_id ?? 'Null') ==
+                                            0) {
+                                          topicController.text =
+                                              topics[i].topic_name ?? 'Null';
+                                          break;
+                                        }
+                                      }
+                                      String content = "";
+                                      var titleController =
+                                          TextEditingController();
+                                      var contentController =
+                                          TextEditingController();
+                                      titleController.text =
+                                          post.title ?? 'Null';
+                                      contentController.text =
+                                          post.content ?? 'Null';
+                                      //topictopicControllerForFix.text=post.topic_id ?? 'Null';
+
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Modify Topic',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Column(
+                                              children: <Widget>[
+                                                Row(
+                                                  children: [
+                                                    ...(topics.map((e) =>
+                                                        topicSelection(e,topicController))),
+                                                  ],
+                                                ),
+                                                TextFormField(
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Topic',
+                                                    //icon: Icon(Icons.account_box),
+                                                  ),
+                                                  controller: topicController,
+                                                ),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Title',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  width: 500,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 16),
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                      //icon: Icon(Icons.account_box),
+                                                    ),
+                                                    style: AppFonts.content,
+                                                    controller: titleController,
+                                                  ),
+                                                ),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Content',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.only(top: 16),
+                                                  height: 10 * 24.0,
+                                                  child: TextField(
+                                                    controller:
+                                                        contentController,
+                                                    maxLines: 10,
+                                                    style: AppFonts.content,
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                      filled: true,
+                                                    ),
+                                                    onChanged: (value) {
+                                                      content = value;
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text("Cancel"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: Text("Submit"),
+                                              onPressed: () {
+                                                // ArticlePost articlePost = ArticlePost(
+                                                //   null,
+                                                //   titleController.text,
+                                                //   DateTime.now(),
+                                                //   contentController.text,
+                                                //   null,
+                                                //   'JOcWUTwArybiZjO9CelOhvBApCT2',
+                                                //   null,
+                                                // );
+                                                // print(articlePost.toString());
+                                                DatabaseService()
+                                                    .modifyExperiencePost(
+                                                        post.post_id ?? 'null',
+                                                        topicIdController.text,
+                                                        titleController.text,
+                                                        contentController.text);
+
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
+                              icon: Icon(
+                                CupertinoIcons.pen,
+                                color: ColorController().getColor().colorText,
+                              ))),
+                          DataCell(post.isApproved!
+                              ? Text('')
+                              : IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      DatabaseService().acceptExperiencePost(
+                                          post.post_id ?? 'Error',
+                                          post.isApproved ?? false);
+                                      DataExperience.updateList(post.post_id!);
+                                    });
+                                  },
+                                  icon: Icon(
+                                    CupertinoIcons.check_mark,
+                                    color:
+                                        ColorController().getColor().colorText,
+                                  ))),
                         ]))
                     .toList(),
           ),
         );
       },
-    );
-
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: DataTable(
-        columns: <DataColumn>[
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'ID',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Title',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Created at',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                '',
-              ),
-            ),
-          ),
-        ],
-        rows: <DataRow>[
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('1')),
-              DataCell(Text('How to be handsome?')),
-              DataCell(Text('02/12/2022')),
-              DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('2')),
-              DataCell(Text('How to improve English skills')),
-              DataCell(Text('01/12/2022')),
-              DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text('3')),
-              DataCell(Text('Is English important for developers?')),
-              DataCell(Text('25/11/2022')),
-              DataCell(IconButton(
-                  onPressed: () {},
-                  icon: Icon(CupertinoIcons.xmark_circle_fill))),
-            ],
-          ),
-        ],
-      ),
     );
   }
 

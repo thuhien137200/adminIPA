@@ -1,10 +1,12 @@
 import 'package:admin_ipa/model/data_question.dart';
+import 'package:admin_ipa/screens/question/data_question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
 import '../../controller/color_theme_controller.dart';
+import '../../services/database_service.dart';
 import '../../style/style.dart';
 
 class QuestionScreen extends StatefulWidget {
@@ -38,6 +40,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
       }
       return Question.test();
     }).toList();
+
+    DataQuestion.dataQuestion = res ?? [];
     return res;
   }
 
@@ -74,7 +78,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
         flex: 1,
       ),
       IconButton(
-          onPressed: () {},
+          onPressed: () {
+            
+          },
           icon: Icon(
             Icons.add,
             color: ColorController().getColor().colorText,
@@ -102,7 +108,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
     return FutureBuilder(
       future: _dataFuture,
       builder: (BuildContext context, AsyncSnapshot<List<Question>?> snapshot) {
-        List<Question>? questions = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -150,9 +155,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 ),
               ),
             ],
-            rows: questions == null
+            rows: DataQuestion.dataQuestion == null
                 ? [RowEmpty()]
-                : questions!
+                : DataQuestion.dataQuestion
                     .map((question) => DataRow(cells: [
                           DataCell(Text(question.id!,
                               style: textStyleTableContent())),
@@ -161,7 +166,53 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           DataCell(Text(question.created_at.toString(),
                               style: textStyleTableContent())),
                           DataCell(IconButton(
-                              onPressed: () {},
+                              //Delete
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Delete QA Post',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: const [
+                                                  Icon(Icons.warning),
+                                                  SizedBox(width: 12),
+                                                  Text(
+                                                      'Are you sure you want to delete?'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text("No"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: const Text("Yes"),
+                                              onPressed: () {
+                                                DatabaseService().deleteQA(
+                                                    question.id ?? 'null');
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
                               icon: Icon(
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
