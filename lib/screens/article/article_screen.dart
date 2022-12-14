@@ -1,11 +1,16 @@
+import 'dart:html';
+import 'dart:io';
+
+import 'package:admin_ipa/screens/article/data_article.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/size_config.dart';
 import '../../controller/color_theme_controller.dart';
 import '../../model/data_article.dart';
-import '../../services/articles_service.dart';
 import '../../services/database_service.dart';
 import '../../style/style.dart';
 
@@ -18,9 +23,9 @@ class ArticleScreen extends StatefulWidget {
 
 class _ArticleScreenState extends State<ArticleScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-
+  String imgUrl = '';
   late Future<List<ArticlePost>?> _dataFuture;
-
+  double progress = 0;
   @override
   void initState() {
     FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -29,15 +34,38 @@ class _ArticleScreenState extends State<ArticleScreen> {
     super.initState();
   }
 
+  uploadToStorage() {
+    var input = FileUploadInputElement()..accept = 'image/*';
+    FirebaseStorage fs = FirebaseStorage.instance;
+    input.click();
+    input.onChange.listen((event) {
+      final file = input.files?.first;
+      final reader = FileReader();
+      reader.readAsDataUrl(file!);
+      reader.onLoadEnd.listen((event) async {
+        var snapshot = await fs.ref().child(file!.name).putBlob(file);
+
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+        setState(() {
+          progress = snapshot.bytesTransferred / snapshot.totalBytes;
+          imgUrl = downloadUrl;
+          print(imgUrl);
+        });
+      });
+    });
+  }
+
   List<ArticlePost>? _articlesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<ArticlePost>? result = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ArticlePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ArticlePost.test();
     }).toList();
+    DataArticle.dataArticle = result ?? [];
+    return result;
   }
 
   Row HeaderArticle() {
@@ -66,6 +94,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ),
       IconButton(
           onPressed: () {
+            late ArticlePost articlePost;
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -73,69 +102,110 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   var titleController = TextEditingController();
                   var contentController = TextEditingController();
 
-                  return AlertDialog(
-                    scrollable: true,
-                    title: Text('Add Article Post'),
-                    content: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Form(
-                        child: Column(
-                          children: <Widget>[
-                            TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Title',
-                                //icon: Icon(Icons.account_box),
-                              ),
-                              controller: titleController,
-                            ),
-                            Container(
-                              height: 10 * 24.0,
-                              child: TextField(
-                                controller: contentController,
-                                maxLines: 10,
-                                decoration: InputDecoration(
-                                  hintText: "Content",
-                                  fillColor: Colors.lightBlue[100],
-                                  filled: true,
+                  return StatefulBuilder(builder: (context, setState) {
+                    return AlertDialog(
+                      scrollable: true,
+                      title: Text(
+                        'Add an Article',
+                        style: AppFonts.headStyle,
+                      ),
+                      content: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Form(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Title',
+                                      style: AppFonts.title,
+                                    ),
+                                  ]),
+                              Container(
+                                width: 500,
+                                padding: EdgeInsets.only(bottom: 16),
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                    fillColor: Colors.lightBlue[100],
+                                    //icon: Icon(Icons.account_box),
+                                  ),
+                                  style: AppFonts.content,
+                                  controller: titleController,
                                 ),
-                                onChanged: (value) {
-                                  content = value;
-                                },
                               ),
-                            ),
-                          ],
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  FlatButton(
+                                      onPressed: () {
+                                        uploadToStorage();
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.blueAccent),
+                                        child: Text(
+                                          'Upload Image',
+                                          style: AppFonts.title,
+                                        ),
+                                      )),
+                                ],
+                              ),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Content',
+                                      style: AppFonts.title,
+                                    ),
+                                  ]),
+                              Container(
+                                padding: EdgeInsets.only(top: 16),
+                                height: 10 * 24.0,
+                                child: TextField(
+                                  controller: contentController,
+                                  maxLines: 10,
+                                  style: AppFonts.content,
+                                  decoration: InputDecoration(
+                                    fillColor: Colors.lightBlue[100],
+                                    filled: true,
+                                  ),
+                                  onChanged: (value) {
+                                    content = value;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text("Cancel"),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      TextButton(
-                          child: Text("Submit"),
-                          onPressed: () {
-                            ArticlePost articlePost = ArticlePost(
-                              null,
-                              titleController.text,
-                              DateTime.now(),
-                              contentController.text,
-                              null,
-                              'JOcWUTwArybiZjO9CelOhvBApCT2',
-                              null,
-                            );
-                            print(articlePost.toString());
-                            // experiencePost.setContent(contentController.text);
-                            // experiencePost.setTitle(titleController.text);
-                            // experiencePost.setCreated_at(DateTime.now());
-                            // ExperiencePost.fromJson(
-                            //     jsonDecode(jsonEncode(experiencePost)));
-                            DatabaseService().addArticle(articlePost);
+                      actions: [
+                        TextButton(
+                          child: Text("Cancel"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        TextButton(
+                            child: Text("Submit"),
+                            onPressed: () {
+                              ArticlePost articlePost = ArticlePost(
+                                null,
+                                titleController.text,
+                                DateTime.now(),
+                                contentController.text,
+                                null,
+                                'JOcWUTwArybiZjO9CelOhvBApCT2',
+                                imgUrl,
+                                null,
+                              );
+                              print(articlePost.toString());
+                              DatabaseService().addArticle(articlePost);
 
-                            Navigator.pop(context);
-                          })
-                    ],
-                  );
+                              Navigator.pop(context);
+                            })
+                      ],
+                    );
+                  });
                 });
           },
           icon: Icon(
@@ -143,10 +213,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
             color: ColorController().getColor().colorText,
           ))
     ]);
-  }
-
-  void removeArtice() {
-    //dosomething
   }
 
   TextStyle textStyleTableHeader() => TextStyle(
@@ -176,7 +242,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
       future: _dataFuture,
       builder:
           (BuildContext context, AsyncSnapshot<List<ArticlePost>?> snapshot) {
-        List<ArticlePost>? articles = snapshot.data;
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -231,9 +296,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 ),
               ),
             ],
-            rows: articles == null
+            rows: DataArticle.dataArticle == null
                 ? [RowEmpty()]
-                : articles
+                : DataArticle.dataArticle
                     .map((article) => DataRow(cells: [
                           DataCell(Text(
                             article.id!,
@@ -248,13 +313,179 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             style: textStyleTableContent(),
                           )),
                           DataCell(IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                setState(() {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          scrollable: true,
+                                          title: Text(
+                                            'Notice',
+                                            style: AppFonts.headStyle,
+                                          ),
+                                          content: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Are you sure you want to delete this Article ?',
+                                                  style: AppFonts.title,
+                                                ),
+                                              ]),
+                                          actions: [
+                                            TextButton(
+                                              child: Text("No"),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                            ),
+                                            TextButton(
+                                                child: Text("Yes"),
+                                                onPressed: () {
+                                                  DataArticle.deletePost(
+                                                      article.id!);
+                                                  DatabaseService()
+                                                      .deleteArticle(
+                                                          article.id!);
+                                                  Navigator.pop(context);
+                                                })
+                                          ],
+                                        );
+                                      });
+                                });
+                              },
                               icon: Icon(
                                 CupertinoIcons.xmark_circle_fill,
                                 color: ColorController().getColor().colorText,
                               ))),
                           DataCell(IconButton(
-                              onPressed: () {},
+                              // Sua
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      String content = "";
+                                      var titleController =
+                                          TextEditingController();
+                                      var contentController =
+                                          TextEditingController();
+                                      titleController.text =
+                                          article.title ?? 'Null';
+                                      contentController.text =
+                                          article.content ?? 'Null';
+                                      imgUrl = article.photoUrl ?? '';
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        title: Text(
+                                          'Edit information',
+                                          style: AppFonts.headStyle,
+                                        ),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Form(
+                                            child: Column(
+                                              children: <Widget>[
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Title',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  width: 500,
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 16),
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                      //icon: Icon(Icons.account_box),
+                                                    ),
+                                                    style: AppFonts.content,
+                                                    controller: titleController,
+                                                  ),
+                                                ),
+                                                FlatButton(
+                                                    onPressed: () {
+                                                      uploadToStorage();
+                                                    },
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Colors
+                                                              .blueAccent),
+                                                      child: Text(
+                                                        'Upload Image',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    )),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Content',
+                                                        style: AppFonts.title,
+                                                      ),
+                                                    ]),
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.only(top: 16),
+                                                  height: 10 * 24.0,
+                                                  child: TextField(
+                                                    controller:
+                                                        contentController,
+                                                    maxLines: 10,
+                                                    style: AppFonts.content,
+                                                    decoration: InputDecoration(
+                                                      fillColor:
+                                                          Colors.lightBlue[100],
+                                                      filled: true,
+                                                    ),
+                                                    onChanged: (value) {
+                                                      content = value;
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text("Cancel"),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                          TextButton(
+                                              child: Text("Submit"),
+                                              onPressed: () {
+                                                // ArticlePost articlePost = ArticlePost(
+                                                //   null,
+                                                //   titleController.text,
+                                                //   DateTime.now(),
+                                                //   contentController.text,
+                                                //   null,
+                                                //   'JOcWUTwArybiZjO9CelOhvBApCT2',
+                                                //   null,
+                                                // );
+                                                // print(articlePost.toString());
+                                                DatabaseService()
+                                                    .modifyTitleContentArticleAndUrl(
+                                                  article.id ?? 'null',
+                                                  titleController.text,
+                                                  contentController.text,
+                                                  imgUrl,
+                                                );
+
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
                               icon: Icon(
                                 CupertinoIcons.pen,
                                 color: ColorController().getColor().colorText,

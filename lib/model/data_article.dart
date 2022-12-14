@@ -11,9 +11,8 @@ class ArticlePost {
   String? author_id;
   String? photoUrl;
   List<String>? liked_users;
-
   ArticlePost(this.id, this.title, this.created_at, this.content,
-      this.categories, this.author_id, this.liked_users);
+      this.categories, this.author_id,this.photoUrl, this.liked_users);
 
   ArticlePost.only({
     this.id,
@@ -113,19 +112,4 @@ class ArticlePost {
     return '${this.title} , ${this.content}';
   }
 
-  static List<ArticlePost> getSampleArticlePostList() {
-    var listCategory = <String>['Algorithm', 'Java'];
-    var listAccount = <String>['id1', 'id2', 'id3'];
-    List<ArticlePost> _post = <ArticlePost>[];
-    _post.add(ArticlePost(
-        '1',
-        'What clothes we should use in the interview day',
-        DateTime.now(),
-        'Clothes are one of the easiest impressive point to the interviewers',
-        listCategory,
-        'authorid1',
-        listAccount,));
-
-    return _post;
-  }
 }
