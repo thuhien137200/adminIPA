@@ -17,7 +17,7 @@ class ColorController {
         colorShadowBox: Colors.black,
         colorText: Colors.white);
     ColorTheme lightTheme = ColorTheme(
-        colorBody: Color.fromRGBO(229, 225, 221, 1),
+        colorBody: Color.fromRGBO(229, 232, 235, 1),
         colorBox: Color.fromRGBO(249, 249, 249, 1),
         colorShadowBox: Color.fromRGBO(91, 90, 88, 1),
         colorText: Colors.black);

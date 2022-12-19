@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:admin_ipa/controller/color_theme_controller.dart';
 import 'package:admin_ipa/screens/quizzes/component/overview.dart';
 import 'package:admin_ipa/screens/quizzes/component/style_table.dart';
@@ -8,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../../../model/data_quizzes.dart';
 import 'custom_box_information.dart';
+import 'custom_sidebar_quiz.dart';
 
 class CustomTable extends StatefulWidget {
   const CustomTable({Key? key}) : super(key: key);
@@ -21,6 +24,9 @@ class _CustomTableState extends State<CustomTable> {
   static List<Categories> listCategories = [];
   static List<SetOfQuiz> listSetOfQuiz = [];
   static int selectTable = 0;
+  static Job jobSelected = Job();
+  static Categories categoriesSelected = Categories();
+  static SetOfQuiz setOfQuiz = SetOfQuiz();
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +55,7 @@ class _CustomTableState extends State<CustomTable> {
               Spacer(),
               GestureDetector(
                 onTap: () {
+                  DataSideBarQuiz.status = 0;
                   QuizzesController.key.currentState!.openEndDrawer();
                 },
                 child: Icon(Icons.add,
@@ -75,14 +82,39 @@ class _CustomTableState extends State<CustomTable> {
                                 DataCell(Text(e.time_created.toString())),
                                 DataCell(Text(e.number_question.toString())),
                                 DataCell(Row(children: [
-                                  Icon(Icons.edit_outlined,
-                                      color: ColorController()
-                                          .getColor()
-                                          .colorText),
-                                  Icon(Icons.highlight_off_rounded,
-                                      color: ColorController()
-                                          .getColor()
-                                          .colorText),
+                                  // GestureDetector(
+                                  //   onTap: () {
+                                  //     print("hell");
+                                  //     DataSideBarQuiz.idJob =
+                                  //         jobSelected.id ?? "";
+                                  //     DataSideBarQuiz.idCategories =
+                                  //         categoriesSelected.id ?? "";
+                                  //     DataSideBarQuiz.idQuiz = e.id ?? "";
+                                  //     DataSideBarQuiz.quizName = e.name ?? "";
+                                  //     DataSideBarQuiz.status = 1;
+                                  //     print("H" +
+                                  //         DataSideBarQuiz.status.toString());
+                                  //     QuizzesController.key.currentState!
+                                  //         .openEndDrawer();
+                                  //   },
+                                  //   child: Icon(Icons.edit_outlined,
+                                  //       color: ColorController()
+                                  //           .getColor()
+                                  //           .colorText),
+                                  // ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      QuizzesServices().deleteData(
+                                          jobSelected.id,
+                                          categoriesSelected.id,
+                                          e.id,
+                                          "Delete successfully set of quiz '${e.name}'");
+                                    },
+                                    child: Icon(Icons.highlight_off_rounded,
+                                        color: ColorController()
+                                            .getColor()
+                                            .colorText),
+                                  ),
                                 ]))
                               ]))
                           .toList()))
@@ -100,6 +132,7 @@ class _CustomTableState extends State<CustomTable> {
                     color: ColorController().getColor().colorText),
                 onTap: () {
                   setState(() {
+                    QuizzesController.selected = 0;
                     selectTable = 0;
                   });
                 }),
@@ -107,7 +140,7 @@ class _CustomTableState extends State<CustomTable> {
             Spacer(),
             GestureDetector(
               onTap: () {
-                _settingModalBottomSheet(context);
+                _settingModalBottomSheetAdd(context);
               },
               child: Icon(Icons.add,
                   color: ColorController().getColor().colorText, size: 32),
@@ -132,14 +165,29 @@ class _CustomTableState extends State<CustomTable> {
                                 DataCell(Text(e.time_created.toString())),
                                 DataCell(Text(e.number_quiz.toString())),
                                 DataCell(Row(children: [
-                                  Icon(Icons.edit_outlined,
-                                      color: ColorController()
-                                          .getColor()
-                                          .colorText),
-                                  Icon(Icons.highlight_off_rounded,
-                                      color: ColorController()
-                                          .getColor()
-                                          .colorText),
+                                  InkWell(
+                                    onTap: () {
+                                      categoriesSelected = e;
+                                      _settingModalBottomSheetUpdate(context);
+                                    },
+                                    child: Icon(Icons.edit_outlined,
+                                        color: ColorController()
+                                            .getColor()
+                                            .colorText),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      QuizzesServices().deleteData(
+                                          jobSelected.id,
+                                          e.id,
+                                          null,
+                                          "Delete successfully categories '${e.name}'");
+                                    },
+                                    child: Icon(Icons.highlight_off_rounded,
+                                        color: ColorController()
+                                            .getColor()
+                                            .colorText),
+                                  ),
                                   InkWell(
                                       child: Icon(Icons.navigate_next_rounded,
                                           color: ColorController()
@@ -147,6 +195,7 @@ class _CustomTableState extends State<CustomTable> {
                                               .colorText),
                                       onTap: () {
                                         setState(() {
+                                          categoriesSelected = e;
                                           listSetOfQuiz = e.listquiz ?? [];
                                           QuizzesController.categoriesId =
                                               e.id ?? "";
@@ -174,11 +223,11 @@ class _CustomTableState extends State<CustomTable> {
                 onTap: () {},
                 child: GestureDetector(
                   onTap: () {
-                    _settingModalBottomSheet(context);
+                    _settingModalBottomSheetAdd(context);
                   },
                   child: GestureDetector(
                     onTap: () {
-                      _settingModalBottomSheet(context);
+                      _settingModalBottomSheetAdd(context);
                     },
                     child: Icon(Icons.add,
                         color: ColorController().getColor().colorText,
@@ -207,21 +256,37 @@ class _CustomTableState extends State<CustomTable> {
                                 DataCell(Text(e.time_created.toString())),
                                 DataCell(Text(e.number_categories.toString())),
                                 DataCell(Row(children: [
-                                  Icon(Icons.edit_outlined,
-                                      color: ColorController()
-                                          .getColor()
-                                          .colorText),
-                                  Icon(Icons.highlight_off_rounded,
-                                      color: ColorController()
-                                          .getColor()
-                                          .colorText),
-                                  InkWell(
+                                  GestureDetector(
+                                    onTap: () {
+                                      jobSelected = e;
+                                      _settingModalBottomSheetUpdate(context);
+                                    },
+                                    child: Icon(Icons.edit_outlined,
+                                        color: ColorController()
+                                            .getColor()
+                                            .colorText),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      QuizzesServices().deleteData(
+                                          e.id,
+                                          null,
+                                          null,
+                                          "Delete successfully Job '${e.name}'");
+                                    },
+                                    child: Icon(Icons.highlight_off_rounded,
+                                        color: ColorController()
+                                            .getColor()
+                                            .colorText),
+                                  ),
+                                  GestureDetector(
                                       child: Icon(Icons.navigate_next_rounded,
                                           color: ColorController()
                                               .getColor()
                                               .colorText),
                                       onTap: () {
                                         setState(() {
+                                          jobSelected = e;
                                           listCategories = e.categories ?? [];
                                           QuizzesController.jobId = e.id ?? "";
                                           QuizzesController.selected = 1;
@@ -234,7 +299,7 @@ class _CustomTableState extends State<CustomTable> {
         ]);
   }
 
-  void _settingModalBottomSheet(context) {
+  void _settingModalBottomSheetAdd(context) {
     double padding = (MediaQuery.of(context).size.width - 500) > 0
         ? (MediaQuery.of(context).size.width - 500)
         : 0;
@@ -242,9 +307,33 @@ class _CustomTableState extends State<CustomTable> {
         context: context,
         backgroundColor: Colors.transparent,
         builder: (BuildContext bc) {
-          return CustomBoxInfomation(
+          return CustomBoxAddInfomation(
             padding: padding,
           );
+        });
+  }
+
+  void _settingModalBottomSheetUpdate(context) {
+    double padding = (MediaQuery.of(context).size.width - 500) > 0
+        ? (MediaQuery.of(context).size.width - 500)
+        : 0;
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+    DocumentReference documentReference =
+        _db.collection('quizzes').doc(jobSelected.id);
+    if (selectTable == 1) {
+      documentReference =
+          documentReference.collection('categories').doc(categoriesSelected.id);
+    }
+
+    showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext bc) {
+          return CustomBoxUpdateInfomation(
+              padding: padding,
+              job: jobSelected,
+              categories: categoriesSelected,
+              documentReference: documentReference);
         });
   }
 }

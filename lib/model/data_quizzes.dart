@@ -16,6 +16,15 @@ class Job {
     this.categories,
   });
 
+  Job template() {
+    return Job(
+        id: "id",
+        name: "name",
+        time_created: null,
+        number_categories: 0,
+        categories: []);
+  }
+
   factory Job.fromJson(Map<String, dynamic>? data, String dataid) {
     final String id = dataid;
     final String name = data?['jobs'];
@@ -116,17 +125,28 @@ class QuestionQuiz {
     return QuestionQuiz(
         content: content, id: dataId, listAnswer: [], correctAnswer: -1);
   }
+
+  void setAnswers(List<Answer> answers) {
+    listAnswer = answers;
+    for (int i = 0; i < answers.length; i++) {
+      if (answers[i].correct ?? false) {
+        correctAnswer = i;
+        return;
+      }
+    }
+  }
 }
 
 class Answer {
+  String? id;
   String? content;
   bool? correct;
 
-  Answer({this.content, this.correct});
+  Answer({this.content, this.correct, this.id});
 
-  factory Answer.fromJson(Map<String, dynamic>? data) {
+  factory Answer.fromJson(Map<String, dynamic>? data, String id) {
     final String content = data?['content'];
     final bool correct = data?['correct'];
-    return Answer(content: content, correct: correct);
+    return Answer(content: content, correct: correct, id: id);
   }
 }

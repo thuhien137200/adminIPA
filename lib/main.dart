@@ -33,9 +33,8 @@ class MyApp extends StatelessWidget {
               print("Error: ${snapshot.error.toString()}");
             }
             if (snapshot.connectionState == ConnectionState.done) {
-              return MyHomePage();
-              return const LoginScreen();
               // return MyHomePage();
+              return const LoginScreen();
             }
             return Center(child: CircularProgressIndicator());
           }),

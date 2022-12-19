@@ -1,3 +1,4 @@
+import 'package:admin_ipa/screens/quizzes/component/custom_sidebar_quiz.dart';
 import 'package:admin_ipa/screens/quizzes/controller/quizzes_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,40 @@ class QuizzesServices {
         return QuestionQuiz(listAnswer: []);
       }).toList();
     });
+
+    return result ?? [];
+  }
+
+  Future<List<String>> getDescriptionOfQuiz(
+      CollectionReference collection) async {
+    List<String>? result;
+    await collection.get().then((QuerySnapshot querySnapshot) {
+      result = querySnapshot.docs.map((doc) {
+        if (doc.exists) {
+          Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+          String a = data!['content'];
+          return a;
+        }
+        return "";
+      }).toList();
+    });
+
+    return result ?? [];
+  }
+
+  Future<List<Answer>> getAnswers(CollectionReference collection) async {
+    List<Answer>? result;
+    await collection.get().then((QuerySnapshot querySnapshot) {
+      result = querySnapshot.docs.map((doc) {
+        if (doc.exists) {
+          Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+          Answer a = Answer.fromJson(data, doc.id);
+          return a;
+        }
+        return Answer();
+      }).toList();
+    });
+
     return result ?? [];
   }
 
@@ -118,6 +153,26 @@ class QuizzesServices {
     collectionReference
         .add(data)
         .then((DocumentReference doc) => messages(mess));
+  }
+
+  Future<void> deleteData(
+      String? idJob, String? idCategories, String? idQuiz, String mess) async {
+    DocumentReference documentReference = _db.collection('quizzes').doc(idJob);
+    if (idCategories != null) {
+      documentReference =
+          documentReference.collection('categories').doc(idCategories);
+    }
+    if (idQuiz != null) {
+      documentReference =
+          documentReference.collection('setofquestion').doc(idQuiz);
+    }
+    await documentReference.delete();
+    messages(mess);
+  }
+
+  Future<void> updateData(DocumentReference documentReference,
+      Map<String, dynamic> data, String mess) async {
+    documentReference.update(data).then((value) => messages(mess));
   }
 
   Future<void> addQuizz(String name, String discription,
@@ -165,5 +220,7 @@ class QuizzesServices {
         });
       }
     }
+    messages("Add quizzes successfully");
+    DataSideBarQuiz().reset();
   }
 }

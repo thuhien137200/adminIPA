@@ -54,7 +54,7 @@ class QuizScreen extends StatelessWidget {
         }
       }
     }
-    OverviewQuiz.listJob = result ?? [];
+    OverviewQuiz.listJob = result;
     OverviewQuiz.numberJob = numberJob;
     OverviewQuiz.numberCategories = numberCategories;
     OverviewQuiz.numberQuizzes = numberSetOfQuiz;

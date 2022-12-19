@@ -1,3 +1,4 @@
+import 'package:admin_ipa/main.dart';
 import 'package:admin_ipa/screens/login/component/login_component.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,7 @@ class LogoutSettings extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Login()),
+                MaterialPageRoute(builder: (context) => MyApp()),
               );
             },
             child: Container(
