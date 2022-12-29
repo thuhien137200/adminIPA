@@ -1,16 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CommentReport {
-  String? id_report_comment;
+ String? id_report_comment;
   String? id_post;
   String? id_author_comment;
   String? id_accuser;
   String? comment_content;
   String? id_comment;
   String? report_type;
+  String? screen;
 
   CommentReport(this.id_report_comment, this.id_post, this.id_author_comment,this.id_accuser,
-      this.comment_content,this.id_comment,this.report_type);
+      this.comment_content,this.id_comment,this.report_type, this.screen);
+  
+  void setScreen(String newScreen){
+    this.screen=newScreen;
+  }
 
   void setIdReportComment(String newId) {
     this.id_report_comment = newId;
@@ -48,6 +53,7 @@ class CommentReport {
     this.comment_content,
     this.id_comment,
     this.report_type,
+    this.screen,
   });
 
   factory CommentReport.test() {
@@ -58,6 +64,7 @@ class CommentReport {
     var comment_content = 'no_content';
     var id_comment='no_id';
     var report_type='test_type';
+    var screen='no_screen';
     return CommentReport.only(
       id_report_comment: id_report_comment,
       id_post: id_post,
@@ -66,6 +73,7 @@ class CommentReport {
       comment_content: comment_content,
       id_comment: id_comment,
       report_type: report_type,
+      screen: screen,
     );
   }
 
@@ -77,6 +85,7 @@ class CommentReport {
     final String? comment_content = data?['comment_content'];
     final String? id_comment= data?['id_comment'];
     final String? report_type=data?['report_type'];
+    final String? screen=data?['screen'];
 
     return CommentReport.only(
       id_report_comment: id_report_comment,
@@ -86,6 +95,7 @@ class CommentReport {
       comment_content: comment_content,
       id_comment: id_comment,
       report_type: report_type,
+      screen: screen,
     );
   }
   factory CommentReport.fromDocumentSnapshot(
@@ -101,5 +111,6 @@ class CommentReport {
         if (comment_content != null) 'comment_content': comment_content,
         if (id_comment !=null) 'id_comment' : id_comment,
         if (report_type !=null) 'report_type': report_type,
+        if (screen !=null) 'screen':screen,
       };
 }

@@ -114,6 +114,7 @@ class ExperiencePost {
   DateTime? created_at;
   String? content;
   List<String>? liked_users;
+  String? author_name;
 //  List<Comment>? comments;
   int? number_of_view;
   bool? isApproved;
@@ -127,7 +128,8 @@ class ExperiencePost {
     this.liked_users,
 //    this.comments,
     this.number_of_view,
-    this.isApproved
+    this.isApproved,
+    this.author_name,
   );
   ExperiencePost.only({
     this.post_id,
@@ -138,13 +140,17 @@ class ExperiencePost {
     this.liked_users,
     // this.comments,
     this.number_of_view,
-    this.isApproved
+    this.isApproved,
+    this.author_name,
   });
 
   void setCreated_at(DateTime? date) {
     this.created_at = date;
   }
 
+  void setAuthorName(String? name){
+    this.author_name=name;
+  }
   void setPostId(String? id) {
     this.post_id = id;
   }
@@ -183,6 +189,7 @@ class ExperiencePost {
     var title = 'This is a test experience';
     var number_of_view = 10;
     var isApproved=true;
+    var author_name='NONAME';
     return ExperiencePost.only(
       post_id: idPost,
       topic_id: idTopic,
@@ -191,7 +198,8 @@ class ExperiencePost {
       created_at: created_at,
       liked_users: likes,
       number_of_view: number_of_view,
-      isApproved: isApproved
+      isApproved: isApproved,
+      author_name: author_name,
     );
   }
 
@@ -210,8 +218,9 @@ class ExperiencePost {
 
     final int? number_of_view = data?['number_of_view'];
     final bool? isApproved=data?['isApproved'];
+    final String? author_name=data?['author_name'];
     return ExperiencePost(post_id, topic_id, title, created_at, content,
-        liked_users, number_of_view,isApproved);
+        liked_users, number_of_view,isApproved,author_name);
   }
 
   factory ExperiencePost.fromDocumentSnapshot(
@@ -229,6 +238,7 @@ class ExperiencePost {
         // if (comments != null) 'comments': comments,
         if (number_of_view != null) 'number_of_view': number_of_view,
         if(isApproved!=null) 'isApproved':isApproved,
+        if (author_name !=null) 'author_name':author_name,
       };
 
   void addLikedUser(String userId) {

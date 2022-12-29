@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/experience/experience_screen.dart';
 import '../screens/report_comment/report_comment_screen.dart';
+import '../screens/user_blocked/user_blocked_screen.dart';
 
 class DatabaseSideBar {
   static int selectionIndex = 0;
@@ -77,7 +78,8 @@ class DatabaseSideBar {
     Widget article = ArticleScreen();
     Widget question = QuestionScreen();
     Widget quiz = QuizScreen(size: size);
-    Widget account = AccountScreen();
+    //Widget account = AccountScreen();
+    Widget account = UserBlockedScreen();
     Widget company = CompanyScreen();
     Widget topic = TopicScreen();
     Widget experience = ExperienceScreen();
