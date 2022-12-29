@@ -54,7 +54,10 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
     //     .collection('reportcomment')
     //     .get()
     //     .then(_commentReportsFromQuerySnapshot);
-    _dataFuture= _db.collection('reportcomment').snapshots().map(_commentReportsFromQuerySnapshot);
+    _dataFuture = _db
+        .collection('reportcomment')
+        .snapshots()
+        .map(_commentReportsFromQuerySnapshot);
     super.initState();
   }
 
@@ -149,14 +152,6 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    'ID',
-                    style: textStyleTableHeader(),
-                  ),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text(
                     'Report Type',
                     style: textStyleTableHeader(),
                   ),
@@ -178,9 +173,9 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                   ),
                 ),
               ),
-                DataColumn(
+              DataColumn(
                 label: Expanded(
-                  child:  Text(
+                  child: Text(
                     'Screen',
                     style: textStyleTableHeader(),
                   ),
@@ -198,10 +193,6 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                 ? [RowEmpty()]
                 : ReportCommentData.reportCommentData
                     .map((reportComment) => DataRow(cells: [
-                          DataCell(Text(
-                            reportComment.id_report_comment!,
-                            style: textStyleTableContent(),
-                          )),
                           DataCell(Text(
                             reportComment.report_type!,
                             style: textStyleTableContent(),
@@ -237,9 +228,9 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                                               child: Flexible(
                                                 child: Column(
                                                   children: [
-                                                        Text(
-                                                     '${reportComment.comment_content ?? 'Error'}',                                                     
-                                                        ),
+                                                    Text(
+                                                      '${reportComment.comment_content ?? 'Error'}',
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -248,49 +239,95 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                                         ),
                                         actions: [
                                           TextButton(
-                                            child: const Text("Cancle"),
+                                            child: const Text("Cancel"),
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                           ),
                                           TextButton(
-                                            child: const Text("Delete Comment"),
-                                            onPressed: ()  {
-                                             if(reportComment.screen!.compareTo('questions')==0){
-                                              DatabaseService().deleteCommentFromQuestion( reportComment.id_comment ??'error',reportComment.id_post??'error');
-                                              DatabaseService().deleteReportComment(reportComment.id_report_comment ?? 'error');
-                                              
-                                             }
-                                             else{
-                                              DatabaseService().deleteCommentFromExperiencePost( reportComment.id_comment ??'error',reportComment.id_post??'error');
-                                              DatabaseService().deleteReportComment(reportComment.id_report_comment ?? 'error');
-                                             }
-                                              Navigator.pop(context);
-                                            }
-                                                
-                                          ),
+                                              child:
+                                                  const Text("Delete Comment"),
+                                              onPressed: () {
+                                                if (reportComment.screen!
+                                                        .compareTo(
+                                                            'questions') ==
+                                                    0) {
+                                                  DatabaseService()
+                                                      .deleteCommentFromQuestion(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                } else {
+                                                  DatabaseService()
+                                                      .deleteCommentFromExperiencePost(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                }
+                                                Navigator.pop(context);
+                                              }),
                                           TextButton(
-                                            child: const Text("Block Candidate"),
-                                            onPressed: () {
-                                              UserBlocked user=UserBlocked(
-                                                null,
-                                                reportComment.id_author_comment,
-                                                DateTime.now(),
-                                                false,
-                                              );
-                                               DatabaseService().addUserBlocked(user);
-                                                if(reportComment.screen!.compareTo('questions')==0){
-                                              DatabaseService().deleteCommentFromQuestion( reportComment.id_comment ??'error',reportComment.id_post??'error');
-                                              DatabaseService().deleteReportComment(reportComment.id_report_comment ?? 'error');
-                                              
-                                             }
-                                             else{
-                                              DatabaseService().deleteCommentFromExperiencePost( reportComment.id_comment ??'error',reportComment.id_post??'error');
-                                              DatabaseService().deleteReportComment(reportComment.id_report_comment ?? 'error');
-                                             }
-                                               Navigator.pop(context);
-                                            }
-                                                
-                                          ),
+                                              child:
+                                                  const Text("Block Candidate"),
+                                              onPressed: () {
+                                                UserBlocked user = UserBlocked(
+                                                  null,
+                                                  reportComment
+                                                      .id_author_comment,
+                                                  DateTime.now(),
+                                                  false,
+                                                );
+                                                DatabaseService()
+                                                    .addUserBlocked(user);
+                                                if (reportComment.screen!
+                                                        .compareTo(
+                                                            'questions') ==
+                                                    0) {
+                                                  DatabaseService()
+                                                      .deleteCommentFromQuestion(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                } else {
+                                                  DatabaseService()
+                                                      .deleteCommentFromExperiencePost(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                }
+                                                Navigator.pop(context);
+                                              }),
                                         ],
                                       );
                                     });
