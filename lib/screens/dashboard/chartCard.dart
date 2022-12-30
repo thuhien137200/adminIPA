@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../controller/color_theme_controller.dart';
+
 class ChartCard extends StatelessWidget {
   final String title, svgSrc, amount;
   final int numOfFiles;
@@ -10,7 +12,7 @@ class ChartCard extends StatelessWidget {
     required this.svgSrc,
     required this.amount,
     required this.numOfFiles,
-}) : super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,8 @@ class ChartCard extends StatelessWidget {
       margin: EdgeInsets.only(top: 16),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        border: Border.all(width: 2, color: Color(0xFF2697FF).withOpacity(0.15)),
+        border:
+            Border.all(width: 2, color: Color(0xFF2697FF).withOpacity(0.15)),
         borderRadius: const BorderRadius.all(
           Radius.circular(16),
         ),
@@ -40,12 +43,20 @@ class ChartCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: ColorController().getColor().colorText,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          Text(amount)
+          Text(
+            amount,
+            style: TextStyle(
+              color: ColorController().getColor().colorText,
+            ),
+          )
         ],
       ),
     );

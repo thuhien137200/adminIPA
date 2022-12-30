@@ -22,7 +22,7 @@ class CompanyScreen extends StatefulWidget {
 class _CompanyScreenState extends State<CompanyScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   late Future<List<Company>?> _dataFuture;
-  String imgUrl='';
+  String imgUrl = '';
   List<Company>? _companiesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
     List<Company>? res = querySnapshot.docs
@@ -52,7 +52,6 @@ class _CompanyScreenState extends State<CompanyScreen> {
           imgUrl = downloadUrl;
           print(imgUrl);
         });
-
       });
     });
   }
@@ -126,19 +125,18 @@ class _CompanyScreenState extends State<CompanyScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                FlatButton(onPressed: (){
-                                  uploadToStorage();
-                                }, child:
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.blueAccent
-                                  ),
-                                  child: Text(
-                                    'Upload Image',
-                                    style: AppFonts.title,
-                                  ),
-
-                                )),
+                                FlatButton(
+                                    onPressed: () {
+                                      uploadToStorage();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.blueAccent),
+                                      child: Text(
+                                        'Upload Image',
+                                        style: AppFonts.title,
+                                      ),
+                                    )),
                               ],
                             ),
                           ],
@@ -401,21 +399,24 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                   ),
                                                 ),
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                   children: [
-                                                    FlatButton(onPressed: (){
-                                                      uploadToStorage();
-                                                    }, child:
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                          color: Colors.blueAccent
-                                                      ),
-                                                      child: Text(
-                                                        'Upload Image',
-                                                        style: AppFonts.title,
-                                                      ),
-
-                                                    )),
+                                                    FlatButton(
+                                                        onPressed: () {
+                                                          uploadToStorage();
+                                                        },
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                  color: Colors
+                                                                      .blueAccent),
+                                                          child: Text(
+                                                            'Upload Image',
+                                                            style:
+                                                                AppFonts.title,
+                                                          ),
+                                                        )),
                                                   ],
                                                 ),
                                               ],
@@ -435,7 +436,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                     .modifyCompanyInformation(
                                                         company.id ?? 'null',
                                                         nameController.text,
-                                                        imgUrl.compareTo('') == 0 ?logoUrlController.text: imgUrl);
+                                                        imgUrl.compareTo('') ==
+                                                                0
+                                                            ? logoUrlController
+                                                                .text
+                                                            : imgUrl);
                                                 Navigator.pop(context);
                                               })
                                         ],

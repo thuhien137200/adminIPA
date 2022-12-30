@@ -1,6 +1,9 @@
 import 'package:admin_ipa/controller/color_theme_controller.dart';
+import 'package:admin_ipa/model/data_account.dart';
+import 'package:admin_ipa/screens/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 
+import '../../../services/account_service.dart';
 import '../style/style.dart';
 
 class EditProfile extends StatelessWidget {
@@ -13,13 +16,28 @@ class EditProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return Column(
-      children: [
-        customHeader(width),
-        customDivider(),
-        Body(width),
-      ],
-    );
+
+    return FutureBuilder(
+        future: AccountServices().getAccountCurrent(),
+        builder: (context, AsyncSnapshot<Account> snapshot) {
+          if (snapshot.hasData) {
+            LoginController.currentUser = snapshot.data;
+            return Column(
+              children: [
+                customHeader(width),
+                customDivider(),
+                Body(width),
+              ],
+            );
+          }
+          return Column(
+            children: [
+              customHeader(width),
+              customDivider(),
+              Body(width),
+            ],
+          );
+        });
   }
 
   Row Body(double width) {
@@ -27,6 +45,9 @@ class EditProfile extends StatelessWidget {
       GenderCheckBox.checkRow = 0;
     else
       GenderCheckBox.checkRow = 1;
+    int? genderIndex = LoginController.currentUser!.gender;
+    GenderCheckBox.selected = genderIndex ?? 0;
+    emailController.text = LoginController.currentUser!.email ?? "";
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -70,7 +91,7 @@ class EditProfile extends StatelessWidget {
                             color: ColorController().getColor().colorText),
                         decoration: Style().inputDecoration(
                             'email137@domain.com',
-                            'Email',
+                            "Email",
                             Icon(Icons.alternate_email_rounded,
                                 color: ColorController()
                                     .getColor()
@@ -106,6 +127,8 @@ class EditProfile extends StatelessWidget {
   }
 
   Widget customrBoxName(double width) {
+    firstNameController.text = LoginController.currentUser!.firstname ?? "";
+    lastNameController.text = LoginController.currentUser!.lastname ?? "";
     Widget firstName = Container(
         margin: EdgeInsets.only(top: 10),
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -113,7 +136,7 @@ class EditProfile extends StatelessWidget {
         child: TextField(
             controller: firstNameController,
             style: TextStyle(color: ColorController().getColor().colorText),
-            decoration: Style().inputDecoration('Olivia', 'First name', null)));
+            decoration: Style().inputDecoration('Olivia', "First name", null)));
     Widget lastName = Container(
         margin: EdgeInsets.only(top: 10),
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -121,7 +144,7 @@ class EditProfile extends StatelessWidget {
         child: TextField(
             controller: lastNameController,
             style: TextStyle(color: ColorController().getColor().colorText),
-            decoration: Style().inputDecoration('Ava', 'Last name', null)));
+            decoration: Style().inputDecoration('Ava', "Last name", null)));
     if (width > 680) {
       return Row(
         children: [
@@ -181,12 +204,25 @@ class EditProfile extends StatelessWidget {
             style: Style().styleTextHeader(),
           ),
           Spacer(),
-          Container(
-            decoration: Style().boxDecorationButton(),
-            padding: EdgeInsets.all(10),
-            child: Text(
-              "Confirm",
-              style: Style().textStyleContent(),
+          GestureDetector(
+            onTap: () {
+              Map<String, dynamic> data = new Map();
+              if (emailController.text != null)
+                data['email'] = emailController.text;
+              if (firstNameController.text != null)
+                data['firstname'] = firstNameController.text;
+              if (lastNameController.text != null)
+                data['lastname'] = lastNameController.text;
+              data['gender'] = GenderCheckBox.selected;
+              AccountServices().updateAccountCurrent(data);
+            },
+            child: Container(
+              decoration: Style().boxDecorationButton(),
+              padding: EdgeInsets.all(10),
+              child: Text(
+                "Confirm",
+                style: Style().textStyleContent(),
+              ),
             ),
           )
         ],
@@ -238,6 +274,7 @@ class SelectGender extends StatefulWidget {
 class _SelectGenderState extends State<SelectGender> {
   Widget checkBox(int index) {
     int selected = GenderCheckBox.selected;
+
     if (index == selected)
       return Icon(
         Icons.radio_button_checked,

@@ -1,5 +1,6 @@
 import 'package:admin_ipa/main.dart';
 import 'package:admin_ipa/screens/login/component/login_component.dart';
+import 'package:admin_ipa/screens/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 
 import '../style/style.dart';
@@ -23,6 +24,7 @@ class LogoutSettings extends StatelessWidget {
         Align(
           child: GestureDetector(
             onTap: () {
+              LoginController.idUser = null;
               Navigator.pop(context);
               Navigator.push(
                 context,

@@ -7,8 +7,10 @@ import '../component/style.dart';
 class LoginController {
   static List<Account> data = [];
 
-  void methodLogin(BuildContext context, String username, String password,
-      List<Account> data) {
+  static String? idUser;
+  static Account? currentUser;
+
+  void methodLogin(BuildContext context, String username, String password) {
     username = username.trim();
     password = password.trim();
     if (username == "") {
@@ -19,10 +21,13 @@ class LoginController {
       Style().messages("Password don't able empty");
       return;
     }
+    debugPrint(data.length.toString());
     for (int i = 0; i < data.length; i++) {
       if (data[i].email == username) {
         if (data[i].password == password) {
           Style().messages("Login successful");
+          idUser = data[i].id;
+          currentUser = data[i];
           Navigator.pop(context);
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => MyHomePage()));

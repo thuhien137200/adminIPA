@@ -1,37 +1,36 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../controller/color_theme_controller.dart';
 import 'dataShared.dart';
 
 class PieChartDetailData extends StatefulWidget {
   int article;
   int question;
   int experience;
-  PieChartDetailData({Key? key,
+  PieChartDetailData({
+    Key? key,
     required this.article,
     required this.question,
-    required this.experience,}) : super(key: key);
+    required this.experience,
+  }) : super(key: key);
 
   @override
   State<PieChartDetailData> createState() => _PieChartDetailDataState();
 }
 
 class _PieChartDetailDataState extends State<PieChartDetailData> {
-
-
   @override
   void initState() {
-    SharedData.numArticle=widget.article;
-    SharedData.numQuestion=widget.question;
-    SharedData.numExperience=widget.experience;
+    SharedData.numArticle = widget.article;
+    SharedData.numQuestion = widget.question;
+    SharedData.numExperience = widget.experience;
     // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     List<PieChartSectionData> paiChartSelectionDatas = [
       PieChartSectionData(
         color: Color(0xFFEE2727),
@@ -51,8 +50,6 @@ class _PieChartDetailDataState extends State<PieChartDetailData> {
         showTitle: false,
         radius: 25,
       ),
-
-
     ];
 
     return SizedBox(
@@ -73,14 +70,19 @@ class _PieChartDetailDataState extends State<PieChartDetailData> {
               children: [
                 SizedBox(height: 16),
                 Text(
-                  "${ SharedData.numArticle +SharedData.numQuestion+ SharedData.numExperience}",
+                  "${SharedData.numArticle + SharedData.numQuestion + SharedData.numExperience}",
                   style: Theme.of(context).textTheme.headline4!.copyWith(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                    height: 0.5,
-                  ),
+                        color: ColorController().getColor().colorText,
+                        fontWeight: FontWeight.w600,
+                        height: 0.5,
+                      ),
                 ),
-                Text("posts")
+                Text(
+                  "posts",
+                  style: TextStyle(
+                    color: ColorController().getColor().colorText,
+                  ),
+                )
               ],
             ),
           ),
@@ -89,6 +91,3 @@ class _PieChartDetailDataState extends State<PieChartDetailData> {
     );
   }
 }
-
-
-

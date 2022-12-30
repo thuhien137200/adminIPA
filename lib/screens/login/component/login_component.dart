@@ -14,12 +14,10 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  List<Account> data = [];
   static int index = 0;
 
   @override
   Widget build(BuildContext context) {
-    data = LoginController.data;
     if (index == 1) return sendToMail();
     if (index == 2) return confirmMail();
     if (index == 3) return resetPassword();
@@ -301,8 +299,8 @@ class _LoginState extends State<Login> {
           child: Align(
             child: GestureDetector(
               onTap: () {
-                LoginController().methodLogin(context, emailController.text,
-                    passwordController.text, data);
+                LoginController().methodLogin(
+                    context, emailController.text, passwordController.text);
               },
               child: Container(
                 height: 50,

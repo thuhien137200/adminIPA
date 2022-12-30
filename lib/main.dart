@@ -1,5 +1,6 @@
 import 'package:admin_ipa/controller/color_theme_controller.dart';
 import 'package:admin_ipa/screens/Quizzes/quizzes_screen.dart';
+import 'package:admin_ipa/screens/login/controller/login_controller.dart';
 import 'package:admin_ipa/screens/login/login_screen.dart';
 import 'package:admin_ipa/services/quizzes_services.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
               print("Error: ${snapshot.error.toString()}");
             }
             if (snapshot.connectionState == ConnectionState.done) {
-              // return MyHomePage();
+              if (LoginController.idUser != null) return MyHomePage();
               return const LoginScreen();
             }
             return Center(child: CircularProgressIndicator());
