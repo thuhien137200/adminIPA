@@ -57,6 +57,21 @@ mixin ExperienceService {
     }
   }
 
+  void deleteCommentFromExperiencePost(String commentId, String experiencePostId) async {
+    try{
+      await _db
+        .collection('experience')
+        .doc(experiencePostId)
+        .collection('comments')
+        .doc(commentId)
+        .delete();
+    }
+    catch(e){
+        print('Delete fails');
+      return;
+    }
+  }
+
   void addExperiencePost(ExperiencePost experiencePost) async {
     DocumentReference doc = _db.collection('experience').doc();
     String doc_id = doc.id;

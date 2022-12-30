@@ -20,7 +20,7 @@ class ReportCommentScreen extends StatefulWidget {
 
 class _ReportCommentScreenState extends State<ReportCommentScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  late Future<List<CommentReport>?> _dataFuture;
+  late Stream<List<CommentReport>?> _dataFuture;
 
   List<CommentReport>? _commentReportsFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
@@ -50,10 +50,14 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
   @override
   void initState() {
     FirebaseFirestore _db = FirebaseFirestore.instance;
+    // _dataFuture = _db
+    //     .collection('reportcomment')
+    //     .get()
+    //     .then(_commentReportsFromQuerySnapshot);
     _dataFuture = _db
         .collection('reportcomment')
-        .get()
-        .then(_commentReportsFromQuerySnapshot);
+        .snapshots()
+        .map(_commentReportsFromQuerySnapshot);
     super.initState();
   }
 
@@ -126,8 +130,8 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
   }
 
   Widget DataTableTopic() {
-    return FutureBuilder(
-      future: _dataFuture,
+    return StreamBuilder(
+      stream: _dataFuture,
       builder:
           (BuildContext context, AsyncSnapshot<List<CommentReport>?> snapshot) {
         return Container(
@@ -145,14 +149,6 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
               ]),
           child: DataTable(
             columns: <DataColumn>[
-              DataColumn(
-                label: Expanded(
-                  child: Text(
-                    'ID',
-                    style: textStyleTableHeader(),
-                  ),
-                ),
-              ),
               DataColumn(
                 label: Expanded(
                   child: Text(
@@ -177,6 +173,14 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                   ),
                 ),
               ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Screen',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
               const DataColumn(
                 label: Expanded(
                   child: Text(
@@ -190,10 +194,6 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                 : ReportCommentData.reportCommentData
                     .map((reportComment) => DataRow(cells: [
                           DataCell(Text(
-                            reportComment.id_report_comment!,
-                            style: textStyleTableContent(),
-                          )),
-                          DataCell(Text(
                             reportComment.report_type!,
                             style: textStyleTableContent(),
                           )),
@@ -203,6 +203,10 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                           )),
                           DataCell(Text(
                             reportComment.comment_content!,
+                            style: textStyleTableContent(),
+                          )),
+                          DataCell(Text(
+                            reportComment.screen!,
                             style: textStyleTableContent(),
                           )),
                           DataCell(IconButton(
@@ -224,9 +228,9 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                                               child: Flexible(
                                                 child: Column(
                                                   children: [
-                                                        Text(
-                                                     '${reportComment.comment_content ?? 'Error'}',                                                     
-                                                        ),
+                                                    Text(
+                                                      '${reportComment.comment_content ?? 'Error'}',
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -235,34 +239,95 @@ class _ReportCommentScreenState extends State<ReportCommentScreen> {
                                         ),
                                         actions: [
                                           TextButton(
-                                            child: const Text("Cancle"),
+                                            child: const Text("Cancel"),
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                           ),
                                           TextButton(
-                                            child: const Text("Delete Comment"),
-                                            onPressed: ()  {
-                                             
-                                              DatabaseService().deleteCommentFromQuestion( reportComment.id_comment ??'error',reportComment.id_post??'error');
-                                              DatabaseService().deleteReportComment(reportComment.id_report_comment ?? 'error');
-                                              Navigator.pop(context);
-                                            }
-                                                
-                                          ),
+                                              child:
+                                                  const Text("Delete Comment"),
+                                              onPressed: () {
+                                                if (reportComment.screen!
+                                                        .compareTo(
+                                                            'questions') ==
+                                                    0) {
+                                                  DatabaseService()
+                                                      .deleteCommentFromQuestion(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                } else {
+                                                  DatabaseService()
+                                                      .deleteCommentFromExperiencePost(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                }
+                                                Navigator.pop(context);
+                                              }),
                                           TextButton(
-                                            child: const Text("Block Candidate"),
-                                            onPressed: () {
-                                              UserBlocked user=UserBlocked(
-                                                null,
-                                                reportComment.id_author_comment,
-                                                DateTime.now(),
-                                                false,
-                                              );
-                                               DatabaseService().addUserBlocked(user);
-                                               Navigator.pop(context);
-                                            }
-                                                
-                                          ),
+                                              child:
+                                                  const Text("Block Candidate"),
+                                              onPressed: () {
+                                                UserBlocked user = UserBlocked(
+                                                  null,
+                                                  reportComment
+                                                      .id_author_comment,
+                                                  DateTime.now(),
+                                                  false,
+                                                );
+                                                DatabaseService()
+                                                    .addUserBlocked(user);
+                                                if (reportComment.screen!
+                                                        .compareTo(
+                                                            'questions') ==
+                                                    0) {
+                                                  DatabaseService()
+                                                      .deleteCommentFromQuestion(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                } else {
+                                                  DatabaseService()
+                                                      .deleteCommentFromExperiencePost(
+                                                          reportComment
+                                                                  .id_comment ??
+                                                              'error',
+                                                          reportComment
+                                                                  .id_post ??
+                                                              'error');
+                                                  DatabaseService()
+                                                      .deleteReportComment(
+                                                          reportComment
+                                                                  .id_report_comment ??
+                                                              'error');
+                                                }
+                                                Navigator.pop(context);
+                                              }),
                                         ],
                                       );
                                     });

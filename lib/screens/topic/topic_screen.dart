@@ -29,7 +29,7 @@ class _TopicScreenState extends State<TopicScreen> {
       }
       return Topic.test();
     }).toList();
-    TopicData.topicData = res ?? [];
+    TopicData.topicData = res ;
     return res;
   }
 
@@ -123,7 +123,7 @@ class _TopicScreenState extends State<TopicScreen> {
   }
 
   DataRow RowEmpty() {
-    return DataRow(cells: [
+    return const DataRow(cells: [
       DataCell(Text("")),
       DataCell(Text("")),
       DataCell(Text("")),
@@ -181,14 +181,14 @@ class _TopicScreenState extends State<TopicScreen> {
                   ),
                 ),
               ),
-              DataColumn(
+              const DataColumn(
                 label: Expanded(
                   child: Text(
                     '',
                   ),
                 ),
               ),
-              DataColumn(
+              const DataColumn(
                 label: Expanded(
                   child: Text(
                     '',

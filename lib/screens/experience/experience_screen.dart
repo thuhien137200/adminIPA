@@ -149,14 +149,14 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                               ],
                             ),
                             TextFormField(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Topic',
                                 //icon: Icon(Icons.account_box),
                               ),
                               controller: topicController,
                             ),
                             TextFormField(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Title',
                                 //icon: Icon(Icons.account_box),
                               ),
@@ -207,7 +207,8 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                                 contentController.text,
                                 null,
                                 null,
-                                false);
+                                false,
+                                'Admin');
                          
                             DatabaseService().addExperiencePost(experiencePost);
                             

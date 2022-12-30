@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 class UserBlocked {
   String? id_post_ban;
   String? id_user;
@@ -32,7 +33,7 @@ class UserBlocked {
  factory UserBlocked.test(){
   String? id_post_ban;
   String? id_user;
-  DateTime? dateBan;
+  DateTime? dateBan=DateTime.now();
   bool? isUnban;
   return UserBlocked.only(
     id_post_ban: id_post_ban,
@@ -45,11 +46,15 @@ class UserBlocked {
  factory UserBlocked.fromJson(Map<String, dynamic>? data) {
     final String? id_post_ban = data?['id_post_ban'];
     final String? id_user = data?['id_user'];
-    final DateTime? dateBan = data?['dateBan'];
+    final String? date_string_created = data?['dateBan'];
+    DateFormat formatter = DateFormat('dd/MM/yyyy');
+    final DateTime  dateBan= DateTime.parse(
+        date_string_created ?? DateTime.utc(2001, 1, 1).toString());
+   // final DateTime? dateBan = data?['dateBan'];
     final bool? isUnban=data?['isUnban'];
 
     return UserBlocked.only(
-     id_post_ban: id_post_ban,
+    id_post_ban: id_post_ban,
     id_user: id_user,
     dateBan: dateBan,
     isUnban: isUnban,
