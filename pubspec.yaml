@@ -46,7 +46,7 @@ dependencies:
   google_fonts: ^3.0.1
   file_picker: ^5.2.3
   firebase_storage: ^11.0.7
-
+  pie_chart: ^5.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

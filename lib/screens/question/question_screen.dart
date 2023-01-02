@@ -74,22 +74,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
               ),
             ]),
       ),
-      Spacer(
-        flex: 1,
-      ),
-      IconButton(
-          onPressed: () {
-            
-          },
-          icon: Icon(
-            Icons.add,
-            color: ColorController().getColor().colorText,
-          ))
-    ]);
-  }
 
-  void removeQuestion() {
-    //dosomething
+    ]);
   }
 
   TextStyle textStyleTableHeader() => TextStyle(

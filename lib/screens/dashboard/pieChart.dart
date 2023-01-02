@@ -72,10 +72,10 @@ class _PieChartDetailDataState extends State<PieChartDetailData> {
                 Text(
                   "${SharedData.numArticle + SharedData.numQuestion + SharedData.numExperience}",
                   style: Theme.of(context).textTheme.headline4!.copyWith(
-                        color: ColorController().getColor().colorText,
-                        fontWeight: FontWeight.w600,
-                        height: 0.5,
-                      ),
+                    color: ColorController().getColor().colorText,
+                    fontWeight: FontWeight.w600,
+                    height: 0.5,
+                  ),
                 ),
                 Text(
                   "posts",
