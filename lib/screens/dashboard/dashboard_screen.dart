@@ -1,4 +1,5 @@
 import 'package:admin_ipa/controller/color_theme_controller.dart';
+import 'package:admin_ipa/screens/dashboard/pieChart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,11 @@ import '../../model/data_article.dart';
 import '../../model/data_company.dart';
 import '../../model/data_experience.dart';
 import '../../model/data_question.dart';
+import '../../services/database_service.dart';
 import '../../style/style.dart';
+import '../article/data_article.dart';
+import '../experience/DataExperience.dart';
+import '../question/data_question.dart';
 import 'PostFigures.dart';
 import 'barChart.dart';
 import 'dataShared.dart';
@@ -35,13 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late Future<List<Company>?> companylist;
   late List<Company>? companies;
 
-  Widget accountPart() {
-    return InfoCard(
-        icon: 'assets/account.svg',
-        label: 'Number of \nAccount',
-        amount: '\ ${SharedData.numAccount}');
-  }
-
+  late Future<List<ArticlePost>?> _dataFuture;
   @override
   void initState() {
     FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -54,7 +53,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _db.collection('experience').get().then(_experienceFromQuerySnapshot);
     companylist =
         _db.collection('companies').get().then(_companiesFromQuerySnapshot);
-
+    _dataFuture =
+        _db.collection('articles').get().then(_articlesFromQuerySnapshot);
     super.initState();
   }
 
@@ -71,14 +71,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   List<ExperiencePost>? _experienceFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<ExperiencePost>? res = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ExperiencePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ExperiencePost.test();
     }).toList();
+    res.sort((a,b){
+      int x=a.liked_users==null? 0: (a.liked_users!.length);
+      int y=b.liked_users==null? 0: (b.liked_users!.length);;
+      return y.compareTo(x);
+    });
+    DataExperience.dataExperienceDashboard = res ?? [];
+    DataExperience.getTop5();
+    return res;
   }
+
 
   List<Question>? _questionsListFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
@@ -90,18 +99,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
       return Question.test();
     }).toList();
+    res.sort((a,b){
+      int x=a.upvote_users==null||a.downvote_users==null? 0: (a.upvote_users!.length-a.downvote_users!.length);
+      int y=b.upvote_users==null||b.downvote_users==null? 0: (b.upvote_users!.length-b.downvote_users!.length);
+      return y.compareTo(x);
+    });
+    DataQuestion.dataQuestionDashboard = res ?? [];
+    DataQuestion.getTop5();
     return res;
   }
 
   List<ArticlePost>? _articlesFromQuerySnapshot(
       QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.docs
+    List<ArticlePost>? result = querySnapshot.docs
         .map((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         return ArticlePost.fromDocumentSnapshot(documentSnapshot);
       }
       return ArticlePost.test();
     }).toList();
+    result.sort((a,b){
+      int x=a.liked_users==null?0:a.liked_users!.length;
+      int y=b.liked_users==null?0:b.liked_users!.length;
+      return y.compareTo(x);
+    });
+    DataArticle.dataArticleDashboard = result ?? [];
+    DataArticle.getTop5();
+    return result;
   }
 
   Widget articlePart() {
@@ -181,6 +205,229 @@ class _DashboardScreenState extends State<DashboardScreen> {
         amount: '\ ${SharedData.numQuiz}');
   }
 
+  DataRow RowEmpty() {
+    return DataRow(cells: [
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+    ]);
+  }
+
+  TextStyle textStyleTableHeader() => TextStyle(
+      fontStyle: FontStyle.italic,
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope-ExtraBold",
+      fontSize: 20,
+      fontWeight: FontWeight.w100);
+  TextStyle textStyleTableContent() => TextStyle(
+      color: ColorController().getColor().colorText,
+      fontFamily: "Manrope",
+      fontSize: 16,
+      fontWeight: FontWeight.w100);
+
+  Widget DataTableArticle() {
+    return FutureBuilder(
+      future: _dataFuture,
+      builder:
+          (BuildContext context, AsyncSnapshot<List<ArticlePost>?> snapshot) {
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              color: ColorController().getColor().colorBox,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: ColorController()
+                        .getColor()
+                        .colorShadowBox
+                        .withOpacity(0.5),
+                    blurRadius: 10)
+              ]),
+          child: DataTable(
+            columns: <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Article Title',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Created At',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+
+            ],
+            rows: DataArticle.dataArticleDashboard == null
+                ? [RowEmpty()]
+                : DataArticle.dataArticleDashboard
+                .map((article) => DataRow(cells: [
+              DataCell(Text(
+                article.id!,
+                style: textStyleTableContent(),
+              )),
+              DataCell(Text(
+                article.title!,
+                style: textStyleTableContent(),
+              )),
+              DataCell(Text(
+                article.created_at.toString(),
+                style: textStyleTableContent(),
+              )),
+            ]))
+                .toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget DataTableQuestion() {
+    return FutureBuilder(
+      future: questionpost,
+      builder: (BuildContext context, AsyncSnapshot<List<Question>?> snapshot) {
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              color: ColorController().getColor().colorBox,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: ColorController()
+                        .getColor()
+                        .colorShadowBox
+                        .withOpacity(0.5),
+                    blurRadius: 10)
+              ]),
+          child: DataTable(
+            columns: <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Question Title',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Created At',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+            ],
+            rows: DataQuestion.dataQuestionDashboard == null
+                ? [RowEmpty()]
+                : DataQuestion.dataQuestionDashboard
+                .map((question) => DataRow(cells: [
+              DataCell(Text(question.id!,
+                  style: textStyleTableContent())),
+              DataCell(Text(question.title!,
+                  style: textStyleTableContent())),
+              DataCell(Text(question.created_at.toString(),
+                  style: textStyleTableContent())),
+            ]))
+                .toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget DataTableExperience() {
+    return FutureBuilder(
+      future: experiencepost,
+      builder: (BuildContext context,
+          AsyncSnapshot<List<ExperiencePost>?> snapshot) {
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              color: ColorController().getColor().colorBox,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: ColorController()
+                        .getColor()
+                        .colorShadowBox
+                        .withOpacity(0.5),
+                    blurRadius: 10)
+              ]),
+          child: DataTable(
+            columns: <DataColumn>[
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'ID',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Title',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Created at',
+                    style: textStyleTableHeader(),
+                  ),
+                ),
+              ),
+            ],
+            rows: DataExperience.dataExperienceDashboard == null
+                ? [RowEmpty()]
+                : DataExperience.dataExperienceDashboard
+                .map((post) => DataRow(cells: [
+              DataCell(Text(
+                post.topic_id!,
+                style: textStyleTableContent(),
+              )),
+              DataCell(Text(
+                post.title!,
+                style: textStyleTableContent(),
+              )),
+              DataCell(Text(
+                post.created_at.toString(),
+                style: textStyleTableContent(),
+              )),
+            ]))
+                .toList(),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -212,7 +459,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               runSpacing: 20,
                               alignment: WrapAlignment.spaceBetween,
                               children: [
-                                accountPart(),
                                 articlePart(),
                                 questionPart(),
                                 experiencePart(),
@@ -232,7 +478,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   PrimaryText(
-                                      text: 'Statistics',
+                                      text: 'Top 5 article posts have most interactive',
                                       color: ColorController()
                                           .getColor()
                                           .colorText,
@@ -245,46 +491,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           SizedBox(
                             height: SizeConfig.blockSizeVertical * 3,
                           ),
-                          Container(
-                            height: 180,
-                            child: BarChartCopmponent(
-                              account: SharedData.numAccount,
-                              article: SharedData.numArticle,
-                              question: SharedData.numQuestion,
-                              experience: SharedData.numExperience,
-                              company: SharedData.numCompany,
-                              quiz: SharedData.numQuiz,
-                            ),
-                          ),
+                          DataTableArticle(),
+
                           SizedBox(
-                            height: SizeConfig.blockSizeVertical * 5,
+                            height: SizeConfig.blockSizeVertical * 4,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              PrimaryText(
-                                  text: 'All Post Figures',
-                                  color: ColorController().getColor().colorText,
-                                  size: 30,
-                                  fontWeight: FontWeight.w800),
-                              PrimaryText(
-                                text: 'Manage All Post Figures',
-                                size: 16,
-                                fontWeight: FontWeight.w400,
-                                color: ColorController()
-                                    .getColor()
-                                    .colorText
-                                    .withOpacity(0.7),
-                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  PrimaryText(
+                                      text: 'Top 5 questions have most interactive',
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText,
+                                      size: 30,
+                                      fontWeight: FontWeight.w800),
+                                ],
+                              )
                             ],
                           ),
                           SizedBox(
-                            height: SizeConfig.blockSizeVertical * 2.5,
+                            height: SizeConfig.blockSizeVertical * 3,
                           ),
-                          PostFigures(
-                              article: SharedData.numArticle,
-                              question: SharedData.numQuestion,
-                              experience: SharedData.numExperience),
+                          DataTableQuestion(),
+
+                          SizedBox(
+                            height: SizeConfig.blockSizeVertical * 4,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  PrimaryText(
+                                      text: 'Top 5 experience posts have most interactive',
+                                      color: ColorController()
+                                          .getColor()
+                                          .colorText,
+                                      size: 30,
+                                      fontWeight: FontWeight.w800),
+                                ],
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: SizeConfig.blockSizeVertical * 3,
+                          ),
+                          DataTableExperience(),
                         ],
                       ),
                     ),
