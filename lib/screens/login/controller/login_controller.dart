@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../main.dart';
 import '../../../model/data_account.dart';
@@ -10,7 +11,8 @@ class LoginController {
   static String? idUser;
   static Account? currentUser;
 
-  int methodLogin(BuildContext context, String username, String password) {
+  Future<int> methodLogin(
+      BuildContext context, String username, String password) async {
     username = username.trim();
     password = password.trim();
     debugPrint(data.length.toString());
@@ -20,9 +22,25 @@ class LoginController {
           Style().messages("Login successful");
           idUser = data[i].id;
           currentUser = data[i];
-          Navigator.pop(context);
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => MyHomePage()));
+          // Navigator.pop(context);
+          // Navigator.of(context)
+          //     .push(MaterialPageRoute(builder: (context) => MyHomePage()));
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setBool("isLoggedIn", true);
+
+          idUser = data[i].id;
+          currentUser = data[i];
+          // Navigator.pop(context);
+          // Navigator.of(context).popUntil((route) => route.isFirst);
+          // Navigator.of(context)
+          //     .push(MaterialPageRoute(builder: (context) => MyHomePage()));
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => const MyHomePage()));
+          });
           return 0;
         } else {
           // Style().messages("User name does not exist or password is wrong");

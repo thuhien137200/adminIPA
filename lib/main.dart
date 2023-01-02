@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 import 'model/data_quizzes.dart';
@@ -23,6 +24,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
+  Future<bool> _isLoggedIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,11 +40,21 @@ class MyApp extends StatelessWidget {
             if (snapshot.hasError) {
               print("Error: ${snapshot.error.toString()}");
             }
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (LoginController.idUser != null) return MyHomePage();
-              return const LoginScreen();
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
             }
-            return Center(child: CircularProgressIndicator());
+            return FutureBuilder<bool>(
+              future: _isLoggedIn(),
+              builder: (context, loggedInSnapshot) {
+                if (loggedInSnapshot.hasError) {
+                  debugPrint("Error: ${loggedInSnapshot.error.toString()}");
+                } else {
+                  bool status = loggedInSnapshot.data ?? false;
+                  return status ? const MyHomePage() : const LoginScreen();
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            );
           }),
     );
   }
