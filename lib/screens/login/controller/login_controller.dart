@@ -10,17 +10,9 @@ class LoginController {
   static String? idUser;
   static Account? currentUser;
 
-  void methodLogin(BuildContext context, String username, String password) {
+  int methodLogin(BuildContext context, String username, String password) {
     username = username.trim();
     password = password.trim();
-    if (username == "") {
-      Style().messages("User don't able empty");
-      return;
-    }
-    if (password == "") {
-      Style().messages("Password don't able empty");
-      return;
-    }
     debugPrint(data.length.toString());
     for (int i = 0; i < data.length; i++) {
       if (data[i].email == username) {
@@ -31,13 +23,14 @@ class LoginController {
           Navigator.pop(context);
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => MyHomePage()));
-          return;
+          return 0;
         } else {
-          Style().messages("User name does not exist or password is wrong");
-          return;
+          // Style().messages("User name does not exist or password is wrong");
+          return 2;
         }
       }
     }
-    Style().messages("User does not exist");
+    return 1;
+    // Style().messages("User does not exist");
   }
 }

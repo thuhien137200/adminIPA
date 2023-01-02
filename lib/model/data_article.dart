@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticlePost {
@@ -12,7 +10,7 @@ class ArticlePost {
   String? photoUrl;
   List<String>? liked_users;
   ArticlePost(this.id, this.title, this.created_at, this.content,
-      this.categories, this.author_id,this.photoUrl, this.liked_users);
+      this.categories, this.author_id, this.photoUrl, this.liked_users);
 
   ArticlePost.only({
     this.id,
@@ -43,7 +41,6 @@ class ArticlePost {
 
   void setAuthorId(String? id) => author_id = id;
 
-
   factory ArticlePost.fromJson(Map<String, dynamic>? data) {
     final String? id = data?['id'];
     final String? title = data?['title'];
@@ -54,7 +51,7 @@ class ArticlePost {
 
     final String? content = data?['content'];
     final List<String>? categories =
-    data?['categories'] is Iterable ? List.from(data?['categories']) : null;
+        data?['categories'] is Iterable ? List.from(data?['categories']) : null;
     final String? author_id = data?['author_id'];
     final String? photoUrl = data?['photoUrl'];
     final List<String>? liked_users = data?['liked_users'] is Iterable
@@ -69,8 +66,7 @@ class ArticlePost {
         created_at: created_at,
         categories: categories,
         photoUrl: photoUrl,
-        liked_users: liked_users
-    );
+        liked_users: liked_users);
   }
 
   factory ArticlePost.fromDocumentSnapshot(
@@ -79,15 +75,15 @@ class ArticlePost {
   }
 
   Map<String, dynamic> toJson() => {
-    if (id != null) 'id': id,
-    if (title != null) 'title': title,
-    if (created_at != null) 'created_at': created_at.toString(),
-    if (content != null) 'content': content,
-    if (categories != null) 'categories': categories,
-    if (author_id != null) 'author_id': author_id,
-    if (photoUrl != null) 'photoUrl': photoUrl,
-    if (liked_users != null) 'liked_users': liked_users,
-  };
+        if (id != null) 'id': id,
+        if (title != null) 'title': title,
+        if (created_at != null) 'created_at': created_at.toString(),
+        if (content != null) 'content': content,
+        if (categories != null) 'categories': categories,
+        if (author_id != null) 'author_id': author_id,
+        if (photoUrl != null) 'photoUrl': photoUrl,
+        if (liked_users != null) 'liked_users': liked_users,
+      };
 
   void addLikedUser(String userId) {
     if (liked_users == null) {
@@ -111,5 +107,4 @@ class ArticlePost {
   String toString() {
     return '${this.title} , ${this.content}';
   }
-
 }

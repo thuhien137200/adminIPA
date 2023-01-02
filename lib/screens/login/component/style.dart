@@ -84,6 +84,15 @@ class Style {
     );
   }
 
+  TextStyle errorTextStyle() {
+    return TextStyle(
+      fontSize: 14,
+      color: Colors.red,
+      fontFamily: "Manrope",
+      decoration: TextDecoration.none,
+    );
+  }
+
   BoxDecoration boxDecoration() => BoxDecoration(
       color: Colors.white70,
       borderRadius: BorderRadius.circular(15),

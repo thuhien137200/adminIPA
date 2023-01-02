@@ -3,6 +3,7 @@ import 'package:admin_ipa/screens/login/component/login_component.dart';
 import 'package:admin_ipa/screens/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 
+import '../../../model/data_side_bar.dart';
 import '../style/style.dart';
 
 class LogoutSettings extends StatelessWidget {
@@ -25,6 +26,7 @@ class LogoutSettings extends StatelessWidget {
           child: GestureDetector(
             onTap: () {
               LoginController.idUser = null;
+              DatabaseSideBar.selectionIndex = 0;
               Navigator.pop(context);
               Navigator.push(
                 context,

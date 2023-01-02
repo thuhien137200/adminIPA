@@ -258,9 +258,16 @@ class _LoginState extends State<Login> {
     );
   }
 
+  static String textErrorEmail = "";
+  static String textErrorPassword = "";
+  static String textEmail = "";
+  static String textPassword = "";
+
   Widget login() {
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    emailController.text = textEmail;
+    passwordController.text = textPassword;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,12 +279,14 @@ class _LoginState extends State<Login> {
         ),
         Text("Email", style: Style().textStyle()),
         Style().customBoxInput(emailController, "Enter the email"),
+        Text(textErrorEmail, style: Style().errorTextStyle()),
         SizedBox(
           width: 1,
           height: 10,
         ),
         Text("Password", style: Style().textStyle()),
         Style().customBoxInputPassword(passwordController, "Password"),
+        Text(textErrorPassword, style: Style().errorTextStyle()),
         Container(
           width: 300,
           child: GestureDetector(
@@ -299,8 +308,46 @@ class _LoginState extends State<Login> {
           child: Align(
             child: GestureDetector(
               onTap: () {
-                LoginController().methodLogin(
+                String errorEmail = "";
+                String errorPassword = "";
+                textEmail = emailController.text.trim();
+                textPassword = passwordController.text.trim();
+                if (emailController.text.trim() == "" ||
+                    passwordController.text.trim() == "") {
+                  if (emailController.text.trim() == "")
+                    errorEmail = "Username don't able empty";
+                  if (passwordController.text.trim() == "")
+                    errorPassword = "Password don't able empty";
+
+                  setState(() {
+                    textErrorEmail = errorEmail;
+                    textErrorPassword = errorPassword;
+                  });
+                  return;
+                }
+                int re = LoginController().methodLogin(
                     context, emailController.text, passwordController.text);
+                if (re == 1) {
+                  errorEmail = "User does not exist";
+                  setState(() {
+                    textErrorEmail = errorEmail;
+                    textErrorPassword = errorPassword;
+                  });
+                }
+                if (re == 2) {
+                  errorPassword =
+                      "User name does not exist or password is wrong";
+                  setState(() {
+                    textErrorEmail = errorEmail;
+                    textErrorPassword = errorPassword;
+                  });
+                }
+                if (re == 0) {
+                  String errorEmail = "";
+                  String errorPassword = "";
+                  textEmail = "";
+                  textPassword = "";
+                }
               },
               child: Container(
                 height: 50,
