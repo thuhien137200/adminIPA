@@ -47,6 +47,8 @@ dependencies:
   file_picker: ^5.2.3
   firebase_storage: ^11.0.7
   pie_chart: ^5.0.0
+  shared_preferences: ^2.0.15
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

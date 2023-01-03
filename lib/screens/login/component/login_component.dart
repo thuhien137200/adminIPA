@@ -307,7 +307,7 @@ class _LoginState extends State<Login> {
           margin: EdgeInsets.symmetric(vertical: 10),
           child: Align(
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
                 String errorEmail = "";
                 String errorPassword = "";
                 textEmail = emailController.text.trim();
@@ -325,7 +325,7 @@ class _LoginState extends State<Login> {
                   });
                   return;
                 }
-                int re = LoginController().methodLogin(
+                int re = await LoginController().methodLogin(
                     context, emailController.text, passwordController.text);
                 if (re == 1) {
                   errorEmail = "User does not exist";
