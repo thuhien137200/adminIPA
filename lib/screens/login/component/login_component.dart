@@ -343,10 +343,10 @@ class _LoginState extends State<Login> {
                   });
                 }
                 if (re == 0) {
-                  String errorEmail = "";
-                  String errorPassword = "";
                   textEmail = "";
                   textPassword = "";
+                  textErrorEmail = "";
+                  textErrorPassword = "";
                 }
               },
               child: Container(

@@ -65,6 +65,10 @@ class PasswordSettings extends StatelessWidget {
         ));
   }
 
+  static String errorPassword = "";
+  static String errorNewPassword = "";
+  static String errorConfirmPassword = "";
+
   Container changePassword(double width) {
     return Container(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -89,9 +93,21 @@ class PasswordSettings extends StatelessWidget {
         ),
         customTextBox(
             currentPasswordController, "Current Password", "Current Password"),
+        Text(
+          errorPassword,
+          style: Style().textErrorStyleContent(),
+        ),
         customTextBox(newPasswordController, "A new Password", "Password"),
+        Text(
+          errorNewPassword,
+          style: Style().textErrorStyleContent(),
+        ),
         customTextBox(confirmPasswordController, "Confirm a new Password",
             "Confirm Password"),
+        Text(
+          errorConfirmPassword,
+          style: Style().textErrorStyleContent(),
+        ),
         Align(
           child: Container(
             height: 50,

@@ -108,4 +108,13 @@ class Style {
         decoration: TextDecoration.none,
         fontWeight: FontWeight.w100);
   }
+
+  TextStyle textErrorStyleContent() {
+    return TextStyle(
+        fontSize: 14,
+        color: Colors.red,
+        fontFamily: "Manrope",
+        decoration: TextDecoration.none,
+        fontWeight: FontWeight.w100);
+  }
 }

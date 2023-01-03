@@ -157,7 +157,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   Container(
                     width: width - 76,
                     child: Text(
-                      " Username",
+                      LoginController.currentUser!.firstname.toString() +
+                          " " +
+                          LoginController.currentUser!.lastname.toString(),
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: 16,
