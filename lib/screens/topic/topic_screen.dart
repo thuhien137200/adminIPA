@@ -181,17 +181,11 @@ class _TopicScreenState extends State<TopicScreen> {
                   ),
                 ),
               ),
-              const DataColumn(
+               DataColumn(
                 label: Expanded(
                   child: Text(
-                    '',
-                  ),
-                ),
-              ),
-              const DataColumn(
-                label: Expanded(
-                  child: Text(
-                    '',
+                    'Modify',
+                    style: textStyleTableHeader(),
                   ),
                 ),
               ),
@@ -208,126 +202,130 @@ class _TopicScreenState extends State<TopicScreen> {
                             topic.topic_name!,
                             style: textStyleTableContent(),
                           )),
-                          DataCell(IconButton(
-                              //Delete function
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        scrollable: true,
-                                        title: Text(
-                                          'Delete Topic Post',
-                                          style: AppFonts.headStyle,
-                                        ),
-                                        content: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Form(
-                                            child: Center(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: const [
-                                                  Icon(Icons.warning),
-                                                  SizedBox(width: 12),
-                                                  Text(
-                                                      'Are you sure you want to delete?'),
-                                                ],
-                                              ),
+                          DataCell(Row(
+                            children: [
+                              IconButton(
+                                //Delete function
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            scrollable: true,
+                                            title: Text(
+                                              'Delete Topic Post',
+                                              style: AppFonts.headStyle,
                                             ),
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            child: const Text("No"),
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                          ),
-                                          TextButton(
-                                              child: const Text("Yes"),
-                                              onPressed: () {
-                                                DatabaseService().deletePost(
-                                                    topic.topic_id ?? 'null');
-                                                Navigator.pop(context);
-                                              })
-                                        ],
-                                      );
-                                    });
-                              },
-                              icon: Icon(
-                                CupertinoIcons.xmark_circle_fill,
-                                color: ColorController().getColor().colorText,
-                              ))),
-                          DataCell(IconButton(
-                              // Modify function
-                              onPressed: () {
-                                var topicController = TextEditingController();
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      String content = "";
-                                      var topicNameController =
-                                          TextEditingController();
-                                      topicNameController.text =
-                                          topic.topic_name ?? 'Null';
-
-                                      return AlertDialog(
-                                        scrollable: true,
-                                        title: Text(
-                                          'Modify Experience Post',
-                                          style: AppFonts.headStyle,
-                                        ),
-                                        content: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Form(
-                                            child: Column(
-                                              children: <Widget>[
-                                                Container(
-                                                  width: 500,
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 16),
-                                                  child: TextFormField(     
-                                                    decoration: InputDecoration(
-                                                      fillColor:
-                                                          Colors.lightBlue[100],
-                                                      //icon: Icon(Icons.account_box),
-                                                    ),
-                                                    style: AppFonts.content,
-                                                    controller:
-                                                        topicNameController,
+                                            content: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Form(
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                    crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                    children: const [
+                                                      Icon(Icons.warning),
+                                                      SizedBox(width: 12),
+                                                      Text(
+                                                          'Are you sure you want to delete?'),
+                                                    ],
                                                   ),
                                                 ),
-                                                
-                                              ],
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            child: Text("Cancel"),
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                          ),
-                                          TextButton(
-                                              child: Text("Submit"),
-                                              onPressed: () {
-                                                DatabaseService().modifyTopic(
-                                                    topic.topic_id ?? 'null',
-                                                    topicNameController.text);
+                                            actions: [
+                                              TextButton(
+                                                child: const Text("No"),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                              ),
+                                              TextButton(
+                                                  child: const Text("Yes"),
+                                                  onPressed: () {
+                                                    DatabaseService().deletePost(
+                                                        topic.topic_id ?? 'null');
+                                                    Navigator.pop(context);
+                                                  })
+                                            ],
+                                          );
+                                        });
+                                  },
+                                  icon: Icon(
+                                    CupertinoIcons.xmark_circle_fill,
+                                    color: ColorController().getColor().colorText,
+                                  )),
+                              IconButton(
+                                // Modify function
+                                  onPressed: () {
+                                    var topicController = TextEditingController();
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          String content = "";
+                                          var topicNameController =
+                                          TextEditingController();
+                                          topicNameController.text =
+                                              topic.topic_name ?? 'Null';
 
-                                                Navigator.pop(context);
-                                              })
-                                        ],
-                                      );
-                                    });
-                              },
-                              icon: Icon(
-                                CupertinoIcons.pen,
-                                color: ColorController().getColor().colorText,
-                              ))),
+                                          return AlertDialog(
+                                            scrollable: true,
+                                            title: Text(
+                                              'Modify Experience Post',
+                                              style: AppFonts.headStyle,
+                                            ),
+                                            content: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Form(
+                                                child: Column(
+                                                  children: <Widget>[
+                                                    Container(
+                                                      width: 500,
+                                                      padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 16),
+                                                      child: TextFormField(
+                                                        decoration: InputDecoration(
+                                                          fillColor:
+                                                          Colors.lightBlue[100],
+                                                          //icon: Icon(Icons.account_box),
+                                                        ),
+                                                        style: AppFonts.content,
+                                                        controller:
+                                                        topicNameController,
+                                                      ),
+                                                    ),
+
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: Text("Cancel"),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                              ),
+                                              TextButton(
+                                                  child: Text("Submit"),
+                                                  onPressed: () {
+                                                    DatabaseService().modifyTopic(
+                                                        topic.topic_id ?? 'null',
+                                                        topicNameController.text);
+
+                                                    Navigator.pop(context);
+                                                  })
+                                            ],
+                                          );
+                                        });
+                                  },
+                                  icon: Icon(
+                                    CupertinoIcons.pen,
+                                    color: ColorController().getColor().colorText,
+                                  ))
+                            ],
+                          )),
                         ]))
                     .toList(),
           ),

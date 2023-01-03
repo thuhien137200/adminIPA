@@ -250,7 +250,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    'ID',
+                    'Article Title',
                     style: textStyleTableHeader(),
                   ),
                 ),
@@ -258,7 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    'Article Title',
+                    'Number\nof likes',
                     style: textStyleTableHeader(),
                   ),
                 ),
@@ -271,18 +271,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-
             ],
             rows: DataArticle.dataArticleDashboard == null
                 ? [RowEmpty()]
                 : DataArticle.dataArticleDashboard
                 .map((article) => DataRow(cells: [
               DataCell(Text(
-                article.id!,
+                article.title!,
                 style: textStyleTableContent(),
               )),
               DataCell(Text(
-                article.title!,
+                article.liked_users!.length.toString(),
                 style: textStyleTableContent(),
               )),
               DataCell(Text(
@@ -319,7 +318,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    'ID',
+                    'Question Title',
                     style: textStyleTableHeader(),
                   ),
                 ),
@@ -327,7 +326,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    'Question Title',
+                    'Number of votes',
                     style: textStyleTableHeader(),
                   ),
                 ),
@@ -345,9 +344,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ? [RowEmpty()]
                 : DataQuestion.dataQuestionDashboard
                 .map((question) => DataRow(cells: [
-              DataCell(Text(question.id!,
-                  style: textStyleTableContent())),
               DataCell(Text(question.title!,
+                  style: textStyleTableContent())),
+              DataCell(Text( (question.upvote_users!.length-question.downvote_users!.length).toString(),
                   style: textStyleTableContent())),
               DataCell(Text(question.created_at.toString(),
                   style: textStyleTableContent())),
@@ -382,7 +381,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    'ID',
+                    'Title',
                     style: textStyleTableHeader(),
                   ),
                 ),
@@ -390,7 +389,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               DataColumn(
                 label: Expanded(
                   child: Text(
-                    'Title',
+                    'Number\nof likes',
                     style: textStyleTableHeader(),
                   ),
                 ),
@@ -409,11 +408,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 : DataExperience.dataExperienceDashboard
                 .map((post) => DataRow(cells: [
               DataCell(Text(
-                post.topic_id!,
+                post.title!,
                 style: textStyleTableContent(),
               )),
               DataCell(Text(
-                post.title!,
+                post.liked_users!.length.toString(),
                 style: textStyleTableContent(),
               )),
               DataCell(Text(

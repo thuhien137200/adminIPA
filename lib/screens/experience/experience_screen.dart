@@ -222,10 +222,6 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     ]);
   }
 
-  void removeExperiencePost() {
-    //dosomething
-  }
-
   TextStyle textStyleTableHeader() => TextStyle(
       fontStyle: FontStyle.italic,
       color: ColorController().getColor().colorText,
@@ -284,12 +280,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               ),
               DataColumn(
                 label: Expanded(
-                  child: Text('Delete', style: textStyleTableHeader()),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text('Edit', style: textStyleTableHeader()),
+                  child: Text('Modify', style: textStyleTableHeader()),
                 ),
               ),
               DataColumn(
@@ -314,198 +305,204 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                             post.created_at.toString(),
                             style: textStyleTableContent(),
                           )),
-                          DataCell(IconButton(
-                            //Delete Function
-                              onPressed: () {
-                                 showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        scrollable: true,
-                                        title: Text(
-                                          'Delete Experience Post',
-                                          style: AppFonts.headStyle,
-                                        ),
-                                        content: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Form(
-                                            child: Center(
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children:const [
-                                                  Icon(Icons.warning),
-                                                  SizedBox(width:12),
-                                                  Text('Are you sure you want to delete?'),
+                          DataCell(
+                              Row(
+                                children: [
+                                  IconButton(
+                                    //Delete Function
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                scrollable: true,
+                                                title: Text(
+                                                  'Delete Experience Post',
+                                                  style: AppFonts.headStyle,
+                                                ),
+                                                content: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Form(
+                                                    child: Center(
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                        children:const [
+                                                          Icon(Icons.warning),
+                                                          SizedBox(width:12),
+                                                          Text('Are you sure you want to delete?'),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    child: const Text("No"),
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                  ),
+                                                  TextButton(
+                                                      child: const Text("Yes"),
+                                                      onPressed: (){
+                                                        DatabaseService().deleteExperiencePost(post.post_id ?? 'null');
+                                                        Navigator.pop(context);
+                                                      })
                                                 ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            child: const Text("No"),
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                          ),
-                                          TextButton(
-                                              child: const Text("Yes"),
-                                              onPressed: (){
-                                                DatabaseService().deleteExperiencePost(post.post_id ?? 'null');
-                                                Navigator.pop(context);
-                                              })
-                                        ],
-                                      );
-                                    });
-                              },
-                              icon: Icon(
-                                CupertinoIcons.xmark_circle_fill,
-                                color: ColorController().getColor().colorText,
-                              ))),
-                          DataCell(IconButton(
-                              //sua
-                              onPressed: () async {
-                                var topics = await _topicFuture;
-                                var topicController = TextEditingController();
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      for (int i = 0; i < topics!.length; i++) {
-                                        if (topics[i].topic_id?.compareTo(
-                                                post.topic_id ?? 'Null') ==
-                                            0) {
-                                          topicController.text =
-                                              topics[i].topic_name ?? 'Null';
-                                          break;
-                                        }
-                                      }
-                                      String content = "";
-                                      var titleController =
-                                          TextEditingController();
-                                      var contentController =
-                                          TextEditingController();
-                                      titleController.text =
-                                          post.title ?? 'Null';
-                                      contentController.text =
-                                          post.content ?? 'Null';
-                                      //topictopicControllerForFix.text=post.topic_id ?? 'Null';
+                                              );
+                                            });
+                                      },
+                                      icon: Icon(
+                                        CupertinoIcons.xmark_circle_fill,
+                                        color: ColorController().getColor().colorText,
+                                      )),
+                                  IconButton(
+                                    //sua
+                                      onPressed: () async {
+                                        var topics = await _topicFuture;
+                                        var topicController = TextEditingController();
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              for (int i = 0; i < topics!.length; i++) {
+                                                if (topics[i].topic_id?.compareTo(
+                                                    post.topic_id ?? 'Null') ==
+                                                    0) {
+                                                  topicController.text =
+                                                      topics[i].topic_name ?? 'Null';
+                                                  break;
+                                                }
+                                              }
+                                              String content = "";
+                                              var titleController =
+                                              TextEditingController();
+                                              var contentController =
+                                              TextEditingController();
+                                              titleController.text =
+                                                  post.title ?? 'Null';
+                                              contentController.text =
+                                                  post.content ?? 'Null';
+                                              //topictopicControllerForFix.text=post.topic_id ?? 'Null';
 
-                                      return AlertDialog(
-                                        scrollable: true,
-                                        title: Text(
-                                          'Modify Topic',
-                                          style: AppFonts.headStyle,
-                                        ),
-                                        content: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Form(
-                                            child: Column(
-                                              children: <Widget>[
-                                                Row(
-                                                  children: [
-                                                    ...(topics.map((e) =>
-                                                        topicSelection(e,topicController))),
-                                                  ],
+                                              return AlertDialog(
+                                                scrollable: true,
+                                                title: Text(
+                                                  'Modify Topic',
+                                                  style: AppFonts.headStyle,
                                                 ),
-                                                TextFormField(
-                                                  decoration: InputDecoration(
-                                                    labelText: 'Topic',
-                                                    //icon: Icon(Icons.account_box),
-                                                  ),
-                                                  controller: topicController,
-                                                ),
-                                                Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        'Title',
-                                                        style: AppFonts.title,
-                                                      ),
-                                                    ]),
-                                                Container(
-                                                  width: 500,
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 16),
-                                                  child: TextFormField(
-                                                    decoration: InputDecoration(
-                                                      fillColor:
-                                                          Colors.lightBlue[100],
-                                                      //icon: Icon(Icons.account_box),
+                                                content: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Form(
+                                                    child: Column(
+                                                      children: <Widget>[
+                                                        Row(
+                                                          children: [
+                                                            ...(topics.map((e) =>
+                                                                topicSelection(e,topicController))),
+                                                          ],
+                                                        ),
+                                                        TextFormField(
+                                                          decoration: InputDecoration(
+                                                            labelText: 'Topic',
+                                                            //icon: Icon(Icons.account_box),
+                                                          ),
+                                                          controller: topicController,
+                                                        ),
+                                                        Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                'Title',
+                                                                style: AppFonts.title,
+                                                              ),
+                                                            ]),
+                                                        Container(
+                                                          width: 500,
+                                                          padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 16),
+                                                          child: TextFormField(
+                                                            decoration: InputDecoration(
+                                                              fillColor:
+                                                              Colors.lightBlue[100],
+                                                              //icon: Icon(Icons.account_box),
+                                                            ),
+                                                            style: AppFonts.content,
+                                                            controller: titleController,
+                                                          ),
+                                                        ),
+                                                        Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                'Content',
+                                                                style: AppFonts.title,
+                                                              ),
+                                                            ]),
+                                                        Container(
+                                                          padding:
+                                                          EdgeInsets.only(top: 16),
+                                                          height: 10 * 24.0,
+                                                          child: TextField(
+                                                            controller:
+                                                            contentController,
+                                                            maxLines: 10,
+                                                            style: AppFonts.content,
+                                                            decoration: InputDecoration(
+                                                              fillColor:
+                                                              Colors.lightBlue[100],
+                                                              filled: true,
+                                                            ),
+                                                            onChanged: (value) {
+                                                              content = value;
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    style: AppFonts.content,
-                                                    controller: titleController,
                                                   ),
                                                 ),
-                                                Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        'Content',
-                                                        style: AppFonts.title,
-                                                      ),
-                                                    ]),
-                                                Container(
-                                                  padding:
-                                                      EdgeInsets.only(top: 16),
-                                                  height: 10 * 24.0,
-                                                  child: TextField(
-                                                    controller:
-                                                        contentController,
-                                                    maxLines: 10,
-                                                    style: AppFonts.content,
-                                                    decoration: InputDecoration(
-                                                      fillColor:
-                                                          Colors.lightBlue[100],
-                                                      filled: true,
-                                                    ),
-                                                    onChanged: (value) {
-                                                      content = value;
-                                                    },
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text("Cancel"),
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            child: Text("Cancel"),
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                          ),
-                                          TextButton(
-                                              child: Text("Submit"),
-                                              onPressed: () {
-                                                // ArticlePost articlePost = ArticlePost(
-                                                //   null,
-                                                //   titleController.text,
-                                                //   DateTime.now(),
-                                                //   contentController.text,
-                                                //   null,
-                                                //   'JOcWUTwArybiZjO9CelOhvBApCT2',
-                                                //   null,
-                                                // );
-                                                // print(articlePost.toString());
-                                                DatabaseService()
-                                                    .modifyExperiencePost(
-                                                        post.post_id ?? 'null',
-                                                        topicIdController.text,
-                                                        titleController.text,
-                                                        contentController.text);
+                                                  TextButton(
+                                                      child: Text("Submit"),
+                                                      onPressed: () {
+                                                        // ArticlePost articlePost = ArticlePost(
+                                                        //   null,
+                                                        //   titleController.text,
+                                                        //   DateTime.now(),
+                                                        //   contentController.text,
+                                                        //   null,
+                                                        //   'JOcWUTwArybiZjO9CelOhvBApCT2',
+                                                        //   null,
+                                                        // );
+                                                        // print(articlePost.toString());
+                                                        DatabaseService()
+                                                            .modifyExperiencePost(
+                                                            post.post_id ?? 'null',
+                                                            topicIdController.text,
+                                                            titleController.text,
+                                                            contentController.text);
 
-                                                Navigator.pop(context);
-                                              })
-                                        ],
-                                      );
-                                    });
-                              },
-                              icon: Icon(
-                                CupertinoIcons.pen,
-                                color: ColorController().getColor().colorText,
-                              ))),
+                                                        Navigator.pop(context);
+                                                      })
+                                                ],
+                                              );
+                                            });
+                                      },
+                                      icon: Icon(
+                                        CupertinoIcons.pen,
+                                        color: ColorController().getColor().colorText,
+                                      ))
+                                ],
+                              )
+                              ),
                           DataCell(post.isApproved!
                               ? Text('')
                               : IconButton(
